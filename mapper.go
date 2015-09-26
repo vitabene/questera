@@ -9,24 +9,26 @@ type ProbMap map[int]Probs
 type Probs struct {
 	base, incrmnt int
 }
-type Grid [nRws][nRws]int
-
-func (g Grid) String() string {
-	var str string
-	for v, _ := range g {
-		str += fmt.Sprintf("%v\n", g[v])
-	}
-	return fmt.Sprintf("%v\n", str)
-}
+type Grid [][]int
 
 const (
-	nRws    = 40
-	nRnds   = 4
-	contP   = 45
-	contInc = 10
+	numRws   = 9
+	numRnds  = 8
+	contProb = 49
+	contIncr = 7
 )
 
 var (
+	trrnNms = map[int]string{
+		1: "grass",
+		2: "forest",
+		3: "mountains",
+		4: "field",
+		5: "moor",
+		6: "pond",
+		7: "road",
+		8: "river",
+	}
 	trrnPrbs = ProbMap{
 		1: {38, 5},
 		2: {33, 8},
@@ -44,58 +46,117 @@ var (
 	}
 )
 
-func main() {
-	var grid Grid
-	grid = gnrtMp(grid)
-	fmt.Println(grid)
-	// grid = gnrtTrrn(grid, true)
-}
-
-func gnrtMp(grid Grid) Grid {
-	for i := 0; i < nRnds; i++ {
-		if i == 0 {
-			grid = gnrtCntnnts(grid, true)
-		} else {
-			grid = gnrtCntnnts(grid, false)
-		}
+func (g Grid) create(x, y int) Grid {
+	grid := make([][]int, y)
+	for i := range grid {
+		grid[i] = make([]int, x)
 	}
 	return grid
 }
 
-func gnrtCntnnts(grid Grid, first bool) Grid {
+func (g Grid) String() string {
+	var str string
+	for _, v := range g {
+		str += fmt.Sprintf("%v\n", v)
+	}
+	return fmt.Sprintf("%v\n", str)
+}
+
+func (g Grid) GraphicString() string {
+	str, landChar, seaChar := "", "■", "□"
+	for i, _ := range g {
+		for _, v := range g[i] {
+			if v == 1 {
+				str += fmt.Sprintf("%v ", landChar)
+			} else {
+				str += fmt.Sprintf("%v ", seaChar)
+			}
+		}
+		str += "\n"
+	}
+	return fmt.Sprintf("%v", str)
+}
+
+func (g Grid) JSON() string {
+	str := "{\n	\"map\":[\n"
+	for i, _ := range g {
+		str += "		["
+		for j, v := range g[i] {
+			str += fmt.Sprintf("%v", v)
+			if j+1 != len(g[i]) {
+				str += ", "
+			}
+		}
+		str += "]"
+		if i+1 != len(g) {
+			str += ","
+		}
+		str += "\n"
+	}
+	str += "	]\n}"
+	return fmt.Sprintf("%v\n", str)
+}
+
+func (g Grid) scale(scaleTimes int) Grid {
+	var newGrid Grid
+	newGrid = newGrid.create(len(g)*scaleTimes, len(g[0])*scaleTimes)
+	for i, _ := range g {
+		for j, v := range g[i] {
+			for k := 0; k < scaleTimes; k++ {
+				for l := 0; l < scaleTimes; l++ {
+					newGrid[i*scaleTimes+k][j*scaleTimes+l] = v
+				}
+			}
+		}
+	}
+	return newGrid
+}
+
+func (g Grid) gnrtMp(newMap bool) Grid {
+	for i := 0; i < numRnds; i++ {
+		if i == 0 && newMap {
+			g = g.gnrtCntnnts(true)
+		} else {
+			g = g.gnrtCntnnts(false)
+		}
+	}
+	return g
+}
+
+func (g Grid) gnrtCntnnts(first bool) Grid {
 	if first {
-		for i := 0; i < len(grid); i++ {
-			for j := 0; j < len(grid[0]); j++ {
-				grid[i][j] = rand.Intn(2)
+		for i := 0; i < len(g); i++ {
+			for j := 0; j < len(g[0]); j++ {
+				g[i][j] = rand.Intn(2)
 			}
 		}
 	} else {
-		for i := 0; i < len(grid); i++ {
-			for j := 0; j < len(grid[0]); j++ {
-				probs := lndArnd(grid, i, j)
-				base := contP
+		for i := 0; i < len(g); i++ {
+			for j := 0; j < len(g[0]); j++ {
+				probs := g.lndArnd(i, j)
+				base := contProb
 				for k, v := range probs {
 					if k == 0 {
-						base -= contInc * v
+						base -= contIncr * v
 					} else {
-						base += contInc * v
+						base += contIncr * v
 					}
 				}
 				rand := rand.Intn(101)
 				if rand <= base {
-					grid[i][j] = 1
+					g[i][j] = 1
 				} else {
-					grid[i][j] = 0
+					g[i][j] = 0
 				}
 			}
 		}
 	}
 	// for debugging purposes
-	fmt.Println(grid)
-	return grid
+	// fmt.Println(g)
+	return g
 }
 
-func lndArnd(grid Grid, i, j int) map[int]int {
+func (g Grid) lndArnd(i, j int) map[int]int {
 	numOcrncs := make(map[int]int)
 	vrtcs := [][]int{
 		{-1, -1}, {-1, 0}, {-1, 1},
@@ -105,18 +166,33 @@ func lndArnd(grid Grid, i, j int) map[int]int {
 	for a := 0; a < len(vrtcs); a++ {
 		r := i + vrtcs[a][0]
 		t := j + vrtcs[a][1]
-		if r >= 0 && t >= 0 && r < nRws && t < nRws {
-			numOcrncs[grid[r][t]]++
+		if r >= 0 && t >= 0 && r < len(g) && t < len(g[0]) {
+			numOcrncs[g[r][t]]++
 		}
 	}
 	return numOcrncs
 }
 
-func gnrtTrrn(grid Grid, first bool) Grid {
+func (g Grid) gnrtTrrn(first bool) Grid {
 	if first {
 
 	} else {
 
 	}
-	return grid
+	return g
+}
+
+func main() {
+	var grid Grid
+	grid = grid.create(numRws, numRws)
+	grid = grid.gnrtMp(true)
+	grid = grid.scale(2)
+	grid = grid.gnrtMp(false)
+	grid = grid.scale(4)
+	grid = grid.gnrtMp(false)
+	grid = grid.scale(2)
+	grid = grid.gnrtMp(false)
+	// fmt.Println(grid.JSON())
+	fmt.Println(grid.GraphicString())
+	// grid = gnrtTrrn(grid, true)
 }
