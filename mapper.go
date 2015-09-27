@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"math"
 )
 
 type ProbMap map[int]Probs
@@ -12,8 +13,8 @@ type Probs struct {
 type Grid [][]int
 
 const (
-	numRws   = 9
-	numRnds  = 8
+	numRws   = 3
+	numRnds  = 4
 	contProb = 49
 	contIncr = 7
 )
@@ -46,55 +47,21 @@ var (
 	}
 )
 
-func (g Grid) create(x, y int) Grid {
-	grid := make([][]int, y)
-	for i := range grid {
-		grid[i] = make([]int, x)
+func main() {
+	var grid Grid
+	grid = grid.create(numRws, numRws)
+	grid = grid.gnrtMp(true, 0)
+	for i := 0; i < numRnds; i++ {
+		grid = grid.scale(2)
+		grid = grid.gnrtMp(false, 1)
 	}
-	return grid
-}
-
-func (g Grid) String() string {
-	var str string
-	for _, v := range g {
-		str += fmt.Sprintf("%v\n", v)
-	}
-	return fmt.Sprintf("%v\n", str)
-}
-
-func (g Grid) GraphicString() string {
-	str, landChar, seaChar := "", "■", "□"
-	for i, _ := range g {
-		for _, v := range g[i] {
-			if v == 1 {
-				str += fmt.Sprintf("%v ", landChar)
-			} else {
-				str += fmt.Sprintf("%v ", seaChar)
-			}
-		}
-		str += "\n"
-	}
-	return fmt.Sprintf("%v", str)
-}
-
-func (g Grid) JSON() string {
-	str := "{\n	\"map\":[\n"
-	for i, _ := range g {
-		str += "		["
-		for j, v := range g[i] {
-			str += fmt.Sprintf("%v", v)
-			if j+1 != len(g[i]) {
-				str += ", "
-			}
-		}
-		str += "]"
-		if i+1 != len(g) {
-			str += ","
-		}
-		str += "\n"
-	}
-	str += "	]\n}"
-	return fmt.Sprintf("%v\n", str)
+	grid = grid.gnrtTrrn(true)
+	grid = grid.gnrtTrrn(false)
+	// fmt.Println(grid.String())
+	// for web
+	// fmt.Println(grid.JSON())
+	// for terminal visualization
+	// fmt.Println(grid.GraphicString())
 }
 
 func (g Grid) scale(scaleTimes int) Grid {
@@ -112,8 +79,11 @@ func (g Grid) scale(scaleTimes int) Grid {
 	return newGrid
 }
 
-func (g Grid) gnrtMp(newMap bool) Grid {
-	for i := 0; i < numRnds; i++ {
+func (g Grid) gnrtMp(newMap bool, numLoops int) Grid {
+	if numLoops == 0 {
+		numLoops = numRnds
+	}
+	for i := 0; i < numLoops; i++ {
 		if i == 0 && newMap {
 			g = g.gnrtCntnnts(true)
 		} else {
@@ -172,27 +142,119 @@ func (g Grid) lndArnd(i, j int) map[int]int {
 	}
 	return numOcrncs
 }
-
+// TODO: use range
 func (g Grid) gnrtTrrn(first bool) Grid {
 	if first {
-
+		for i := 0; i < len(g); i++ {
+			for j := 0; j < len(g[0]); j++ {
+				if g[i][j] == 1 {
+					g[i][j] = rand.Intn(len(trrnPrbs))
+				} else {
+					g[i][j] = -rand.Intn(len(seaPrbs))
+				}
+			}
+		}
 	} else {
-
+		for i := 0; i < len(g); i++ {
+			for j := 0; j < len(g[0]); j++ {
+				probs := g.lndArnd(i, j)
+				if g[i][j] > 0 {
+					g[i][j] = getTrrn(getTrrnProbs(probs))
+				} else {
+					g[i][j] = getSea(getSeaProbs(probs))
+				}
+			}
+		}
 	}
 	return g
 }
 
-func main() {
-	var grid Grid
-	grid = grid.create(numRws, numRws)
-	grid = grid.gnrtMp(true)
-	grid = grid.scale(2)
-	grid = grid.gnrtMp(false)
-	grid = grid.scale(4)
-	grid = grid.gnrtMp(false)
-	grid = grid.scale(2)
-	grid = grid.gnrtMp(false)
-	// fmt.Println(grid.JSON())
-	fmt.Println(grid.GraphicString())
-	// grid = gnrtTrrn(grid, true)
+func getTrrnProbs(probs map[int]int) map[int]int {
+	trrnToProb := make(map[int]int)
+	for k, prob := range trrnPrbs {
+		v, ok := probs[k]
+		if ok {
+			base := prob.base
+			base += int(math.Abs(float64(v))) * prob.incrmnt
+			trrnToProb[k] = base
+		} else {
+			trrnToProb[k] = prob.base
+		}
+	}
+	return trrnToProb
+}
+func getSeaProbs(probs map[int]int) map[int]int {
+	seaToProb := make(map[int]int)
+	for k, prob := range seaPrbs {
+		v, ok := probs[k]
+		if ok {
+			base := prob.base
+			base += int(math.Abs(float64(v))) * prob.incrmnt
+			seaToProb[k] = base
+		} else {
+			seaToProb[k] = prob.base
+		}
+	}
+	return seaToProb
+}
+
+func getTrrn(percentages map[int]int) int {
+	// temp
+	return 0
+}
+
+func getSea(percentages map[int]int) int {
+	// temp
+	return 0
+}
+
+func (g Grid) create(x, y int) Grid {
+	grid := make([][]int, y)
+	for i := range grid {
+		grid[i] = make([]int, x)
+	}
+	return grid
+}
+
+func (g Grid) String() string {
+	var str string
+	for _, v := range g {
+		str += fmt.Sprintf("%v\n", v)
+	}
+	return fmt.Sprintf("%v\n", str)
+}
+
+func (g Grid) GraphicString() string {
+	str, landChar, seaChar := "", "■", "□"
+	for i, _ := range g {
+		for _, v := range g[i] {
+			if v == 1 {
+				str += fmt.Sprintf("%v ", landChar)
+			} else {
+				str += fmt.Sprintf("%v ", seaChar)
+			}
+		}
+		str += "\n"
+	}
+	return fmt.Sprintf("%v", str)
+}
+
+func (g Grid) JSON() string {
+	str := "{\n	\"map\":[\n"
+	for i, _ := range g {
+		str += "		["
+		for j, v := range g[i] {
+			str += fmt.Sprintf("%v", v)
+			if j+1 != len(g[i]) {
+				str += ", "
+			}
+		}
+		str += "]"
+		if i+1 != len(g) {
+			str += ","
+		}
+		str += "\n"
+	}
+	str += "	]\n}"
+	return fmt.Sprintf("%v\n", str)
 }
