@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"math"
+	"math/rand"
 )
 
 type ProbMap map[int]Probs
@@ -11,9 +11,10 @@ type Probs struct {
 	base, incrmnt int
 }
 type Grid [][]int
+type IterateGrid func(Grid, int, int) Grid
 
 const (
-	numRws   = 3
+	numRws   = 5
 	numRnds  = 4
 	contProb = 49
 	contIncr = 7
@@ -50,18 +51,63 @@ var (
 func main() {
 	var grid Grid
 	grid = grid.create(numRws, numRws)
-	grid = grid.gnrtMp(true, 0)
+	grid = grid.rangeGrid(fillRandLand)
+	grid = grid.gnrtMp(0)
 	for i := 0; i < numRnds; i++ {
 		grid = grid.scale(2)
-		grid = grid.gnrtMp(false, 1)
+		grid = grid.gnrtMp(1)
 	}
-	grid = grid.gnrtTrrn(true)
-	grid = grid.gnrtTrrn(false)
+	// grid = grid.gnrtTrrn(true)
+	// grid = grid.gnrtTrrn(false)
 	// fmt.Println(grid.String())
 	// for web
 	// fmt.Println(grid.JSON())
 	// for terminal visualization
-	// fmt.Println(grid.GraphicString())
+	fmt.Println(grid.GraphicString())
+}
+
+func (g Grid) rangeGrid(fn IterateGrid) Grid {
+	for i, _ := range g {
+		for j, _ := range g[i] {
+			g = fn(g, i, j)
+		}
+	}
+	return g
+}
+
+func fillRandLand(g Grid, i, j int) Grid {
+	// 2 options - 1 = land, 0 = ocean
+	g[i][j] = rand.Intn(2)
+	return g
+}
+
+func fillRandTrrn(g Grid, i, j int) Grid {
+	if g[i][j] == 1 {
+		g[i][j] = rand.Intn(len(trrnPrbs))
+	} else {
+		g[i][j] = -rand.Intn(len(seaPrbs))
+	}
+	return g
+}
+
+func gnrtTrrn(g Grid, i, j int) Grid {
+	probs := g.lndArnd(i, j)
+	if g[i][j] > 0 {
+		g[i][j] = getTrrn(getTrrnProbs(probs))
+	} else {
+		g[i][j] = getSea(getSeaProbs(probs))
+	}
+	return g
+}
+
+func getTrrn(percentages map[int]int) int {
+	// temp
+	return 0
+}
+
+func getSea(percentages map[int]int) int {
+	// temp
+	return 0
 }
 
 func (g Grid) scale(scaleTimes int) Grid {
@@ -79,47 +125,31 @@ func (g Grid) scale(scaleTimes int) Grid {
 	return newGrid
 }
 
-func (g Grid) gnrtMp(newMap bool, numLoops int) Grid {
+func (g Grid) gnrtMp(numLoops int) Grid {
 	if numLoops == 0 {
 		numLoops = numRnds
 	}
 	for i := 0; i < numLoops; i++ {
-		if i == 0 && newMap {
-			g = g.gnrtCntnnts(true)
-		} else {
-			g = g.gnrtCntnnts(false)
-		}
+		g = g.rangeGrid(gnrtCntnnts)
 	}
 	return g
 }
 
-func (g Grid) gnrtCntnnts(first bool) Grid {
-	if first {
-		for i := 0; i < len(g); i++ {
-			for j := 0; j < len(g[0]); j++ {
-				g[i][j] = rand.Intn(2)
-			}
+func gnrtCntnnts(g Grid, i, j int) Grid {
+	probs := g.lndArnd(i, j)
+	base := contProb
+	for k, v := range probs {
+		if k == 0 {
+			base -= contIncr * v
+		} else {
+			base += contIncr * v
 		}
+	}
+	rand := rand.Intn(101)
+	if rand <= base {
+		g[i][j] = 1
 	} else {
-		for i := 0; i < len(g); i++ {
-			for j := 0; j < len(g[0]); j++ {
-				probs := g.lndArnd(i, j)
-				base := contProb
-				for k, v := range probs {
-					if k == 0 {
-						base -= contIncr * v
-					} else {
-						base += contIncr * v
-					}
-				}
-				rand := rand.Intn(101)
-				if rand <= base {
-					g[i][j] = 1
-				} else {
-					g[i][j] = 0
-				}
-			}
-		}
+		g[i][j] = 0
 	}
 	// for debugging purposes
 	// fmt.Println(g)
@@ -133,7 +163,7 @@ func (g Grid) lndArnd(i, j int) map[int]int {
 		{0, -1}, {0, 1},
 		{1, -1}, {1, 0}, {1, 1},
 	}
-	for a := 0; a < len(vrtcs); a++ {
+	for a, _ := range vrtcs {
 		r := i + vrtcs[a][0]
 		t := j + vrtcs[a][1]
 		if r >= 0 && t >= 0 && r < len(g) && t < len(g[0]) {
@@ -141,32 +171,6 @@ func (g Grid) lndArnd(i, j int) map[int]int {
 		}
 	}
 	return numOcrncs
-}
-// TODO: use range
-func (g Grid) gnrtTrrn(first bool) Grid {
-	if first {
-		for i := 0; i < len(g); i++ {
-			for j := 0; j < len(g[0]); j++ {
-				if g[i][j] == 1 {
-					g[i][j] = rand.Intn(len(trrnPrbs))
-				} else {
-					g[i][j] = -rand.Intn(len(seaPrbs))
-				}
-			}
-		}
-	} else {
-		for i := 0; i < len(g); i++ {
-			for j := 0; j < len(g[0]); j++ {
-				probs := g.lndArnd(i, j)
-				if g[i][j] > 0 {
-					g[i][j] = getTrrn(getTrrnProbs(probs))
-				} else {
-					g[i][j] = getSea(getSeaProbs(probs))
-				}
-			}
-		}
-	}
-	return g
 }
 
 func getTrrnProbs(probs map[int]int) map[int]int {
@@ -183,6 +187,7 @@ func getTrrnProbs(probs map[int]int) map[int]int {
 	}
 	return trrnToProb
 }
+
 func getSeaProbs(probs map[int]int) map[int]int {
 	seaToProb := make(map[int]int)
 	for k, prob := range seaPrbs {
@@ -196,16 +201,6 @@ func getSeaProbs(probs map[int]int) map[int]int {
 		}
 	}
 	return seaToProb
-}
-
-func getTrrn(percentages map[int]int) int {
-	// temp
-	return 0
-}
-
-func getSea(percentages map[int]int) int {
-	// temp
-	return 0
 }
 
 func (g Grid) create(x, y int) Grid {
