@@ -57,13 +57,14 @@ func main() {
 		grid = grid.scale(2)
 		grid = grid.gnrtMp(1)
 	}
+	grid = grid.rangeGrid(fillRandTrrn)
 	// grid = grid.gnrtTrrn(true)
 	// grid = grid.gnrtTrrn(false)
-	// fmt.Println(grid.String())
+	fmt.Println(grid.String())
 	// for web
 	// fmt.Println(grid.JSON())
 	// for terminal visualization
-	fmt.Println(grid.GraphicString())
+	// fmt.Println(grid.GraphicString())
 }
 
 func (g Grid) rangeGrid(fn IterateGrid) Grid {

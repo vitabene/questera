@@ -13,15 +13,32 @@ var QUESTS = [
   {name: 'Learn More About Laravel', type: 'Exploration', done: false, created: '1443601842867'}
 ];
 
+var MAPOBJECTS = [
+  {id: '1', type: 'Camp', visited: false, created: '1443601842862'}
+];
+
 var Map = React.createClass({
   render: function() {
     var rows = [];
     this.props.quests.forEach(function(quest) {
-        rows.push(<Quest quest={quest} key={quest.name}/>);
+        rows.push(<MapQuest quest={quest} key={quest.name}/>);
+    });
+    this.props.mapobjects.forEach(function(object) {
+        rows.push(<MapObject object={object} key={object.name}/>);
     });
     return (
       <div className="map" id="map">
         {rows}
+      </div>
+    );
+  }
+});
+
+var MapObject = React.createClass({
+  render: function() {
+    return (
+      <div className={this.props.object.type}>
+        {this.props.object.type}
       </div>
     );
   }
@@ -60,6 +77,26 @@ var Quest = React.createClass({
   }
 });
 
+var MapQuest = React.createClass({
+  render: function() {
+    return (
+      <div className="map-quest">
+        <img className={this.props.quest.type} alt={this.props.quest.name} src={this.props.quest.name}/>
+      </div>
+    );
+  }
+});
+
+var QuestField = React.createClass({
+  render: function() {
+    return (
+      <div className="quest-field-box">
+        <input className="quest-field" id="questField"/>
+      </div>
+    );
+  }
+});
+
 var Questboard = React.createClass({
   render: function() {
     var rows = [];
@@ -79,11 +116,12 @@ var Game = React.createClass({
     return (
       <div>
         <Heroboard hero={this.props.hero} />
-        <Map quests={this.props.quests} />
+        <Map quests={this.props.quests} mapobjects={this.props.mapobjects}/>
+        <QuestField />
         <Questboard quests={this.props.quests} />
       </div>
     );
   }
 });
 
-React.render(<Game quests={QUESTS} quests={QUESTS} hero={HERO} />, document.getElementById('game'));
+React.render(<Game quests={QUESTS} mapobjects={MAPOBJECTS} hero={HERO} />, document.getElementById('game'));
