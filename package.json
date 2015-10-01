@@ -17,11 +17,14 @@
   },
   "homepage": "https://github.com/vitabene/questera#readme",
   "devDependencies": {
+    "browser-sync": "^2.9.8",
     "gulp": "^3.9.0",
     "gulp-browserify": "^0.5.1",
     "gulp-concat": "^2.6.0",
     "gulp-copy": "0.0.2",
     "gulp-plumber": "^1.0.1",
+    "gulp-sass": "^2.0.4",
+    "gulp-sourcemaps": "^1.6.0",
     "reactify": "^1.1.1"
   }
 }

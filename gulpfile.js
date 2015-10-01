@@ -1,8 +1,11 @@
-var gulp = require('gulp');
-var concat = require('gulp-concat');
-var browserify = require('gulp-browserify');
-var plumber = require('gulp-plumber');
-var copy = require('gulp-copy');
+var gulp = require('gulp'),
+		concat = require('gulp-concat'),
+		browserify = require('gulp-browserify'),
+		plumber = require('gulp-plumber'),
+		copy = require('gulp-copy'),
+		sourcemaps = require('gulp-sourcemaps'),
+		sass = require('gulp-sass'),
+		browserSync = require('browser-sync').create();
 
 gulp.task('browserify', function() {
 	gulp.src('src/main.js')
@@ -14,8 +17,23 @@ gulp.task('browserify', function() {
 	  .pipe(gulp.dest('build'));
 });
 
-gulp.task('default', ['watch']);
+gulp.task('browser-sync', function() {
+    browserSync.init({
+        proxy: "dev:4000"
+    });
+});
 
+gulp.task('sass', function () {
+  gulp.src('src/styles/*.scss')
+		.pipe(sourcemaps.init())
+    .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
+		.pipe(sourcemaps.write())
+    .pipe(gulp.dest('build/css'))
+		.pipe(browserSync.stream());
+});
+
+gulp.task('default', ['browser-sync', 'watch']);
 gulp.task('watch', function(){
-	gulp.watch('src/**/*.*', ['browserify']);
+	gulp.watch('src/**/*.*', ['browserify', 'sass']);
+	gulp.watch('src/*.js').on('change', browserSync.reload)
 });

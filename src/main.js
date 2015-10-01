@@ -105,6 +105,7 @@ var Questboard = React.createClass({
     });
     return (
       <div className="questboard" id="questboard">
+      <QuestField />
         {rows}
       </div>
     );
@@ -117,7 +118,6 @@ var Game = React.createClass({
       <div>
         <Heroboard hero={this.props.hero} />
         <Map quests={this.props.quests} mapobjects={this.props.mapobjects}/>
-        <QuestField />
         <Questboard quests={this.props.quests} />
       </div>
     );
