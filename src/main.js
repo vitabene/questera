@@ -1,7 +1,7 @@
 // questera
 
 var HERO = {
-  name: "Vita", profession: "Mage", avatar: "assets/me0.png"
+  name: "Vita", craft: "Mage", avatar: "assets/hero.png"
 };
 
 var QUESTS = [
@@ -18,18 +18,33 @@ var MAPOBJECTS = [
 ];
 
 var Map = React.createClass({
+  componentWillMount: function() {
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onreadystatechange = function(){
+      if (httpRequest.readyState === 4) {
+        if (httpRequest.status === 200) {
+          var map = JSON.parse(httpRequest.responseText);
+          console.log(map);
+        } else {
+          console.error('There was a problem with the request.');
+        }
+      }
+    };
+    httpRequest.open('GET', 'assets/map.json', true);
+    httpRequest.send(null);
+  },
   render: function() {
     var rows = [];
-    this.props.quests.forEach(function(quest) {
-        rows.push(<MapQuest quest={quest} key={quest.name}/>);
-    });
-    this.props.mapobjects.forEach(function(object) {
-        rows.push(<MapObject object={object} key={object.name}/>);
-    });
+    // this.props.quests.forEach(function(quest) {
+    //     rows.push(<MapQuest quest={quest} key={quest.name}/>);
+    // });
+    // this.props.mapobjects.forEach(function(object) {
+    //     rows.push(<MapObject object={object} key={object.name}/>);
+    // });
     return (
-      <div className="map" id="map">
+      <table className="map" id="map">
         {rows}
-      </div>
+      </table>
     );
   }
 });
@@ -48,9 +63,9 @@ var Hero = React.createClass({
   render: function() {
     return (
       <div className="hero" id="hero">
-        <h1>{this.props.hero.name}</h1>
-        <h2>{this.props.hero.profession}</h2>
-        <img src={this.props.hero.avatar} alt="Hero"/>
+        <img src={this.props.hero.avatar} className="hero__avatar" alt="Hero"/>
+        <h1 className="hero__name">{this.props.hero.name}</h1>
+        <h2 className="hero__craft">{this.props.hero.craft}</h2>
       </div>
     );
   }
@@ -70,8 +85,8 @@ var Quest = React.createClass({
   render: function() {
     return (
       <div className="quest">
-        <p>{this.props.quest.name}</p>
-        <p>{this.props.quest.type}</p>
+        <img className="quest__image image" src={"assets/" + this.props.quest.type.toLowerCase() + ".png"} />
+        <span className="quest__name">{this.props.quest.name}</span>
       </div>
     );
   }
@@ -81,7 +96,7 @@ var MapQuest = React.createClass({
   render: function() {
     return (
       <div className="map-quest">
-        <img className={this.props.quest.type} alt={this.props.quest.name} src={this.props.quest.name}/>
+        <img className={this.props.quest.type} alt={this.props.quest.name}/>
       </div>
     );
   }

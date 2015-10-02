@@ -3,6 +3,7 @@ html, body {
 	min-height: 100%;
 	margin: 0;
 	padding: 0;
+	font-family: 'Alagard';
 }
 a {
 	text-decoration: none;
@@ -11,17 +12,69 @@ a {
 		text-decoration: none;
 	}
 }
-.questboard {
+.board {
 	position: fixed;
-	right: 0;
 	top: 0;
 	min-height: 100%;
-	float: right;
 	width: 20%;
+	background-color: darkgoldenrod;
+}
+.questboard {
+	@extend .board;
+	float: right;
+	right: 0;
 	border-left: 3px solid goldenrod;
-	background-color: gold;
-	.quest {
-		margin-left: 10%;
+}
+.quest {
+	margin: 5%;
+	width: 90%;
+	position: relative;
+	display: block;
+	&__image {
+		float: left;
+		width: 15%;
+		height: auto;
+	}
+	&__name {
+		float: left;
+		width: 82%;
+		height: 50px;
+		vertical-align: middle;
+		line-height: 100%;
+		padding-top: 3px;
+		padding-left: 3%;
+	}
+}
+.heroboard {
+	@extend .board;
+	float: left;
+	left: 0;
+	border-right: 3px solid goldenrod;
+}
+.hero {
+	width: 80%;
+	margin: 10%;
+	display: block;
+	&__avatar {
+		width: 30%;
+		float: left;
+		height: auto;
+		background-color: rgba(2, 13, 23, 1);
+	}
+	&__name {
+		width: 70%;
+		margin: 0;
+		text-indent: 10px;
+		padding: 0;
+		height: 34px;
+		float: left;
+	}
+	&__craft {
+		margin: 0;
+		text-indent: 10px;
+		padding: 10px 0 0 0;
+		width: 70%;
+		float: left;
 	}
 }
 .quest-field-box {
@@ -31,7 +84,10 @@ a {
 .quest-field {
 	height: 34px;
 	width: 90%;
-	margin: 12px 5%;
+	margin: 25px 5%;
 	outline: 0;
+	text-indent: 10px;
+	font-family: 'Alagard';
+	font-size: large;
 	border: 0;
 }

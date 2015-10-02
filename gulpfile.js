@@ -15,6 +15,8 @@ gulp.task('browserify', function() {
 		.pipe(gulp.dest('build'));
 	gulp.src('src/views/*')
 	  .pipe(gulp.dest('build'));
+	gulp.src('src/assets/*')
+	  .pipe(gulp.dest('build/assets'));
 });
 
 gulp.task('browser-sync', function() {
@@ -35,5 +37,5 @@ gulp.task('sass', function () {
 gulp.task('default', ['browser-sync', 'watch']);
 gulp.task('watch', function(){
 	gulp.watch('src/**/*.*', ['browserify', 'sass']);
-	gulp.watch('src/*.js').on('change', browserSync.reload)
+	gulp.watch('src/*.js').on('change', browserSync.reload);
 });
