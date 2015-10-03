@@ -1,9 +1,10 @@
 package main
 
-import ( 
+import (
 	"fmt"
 	"math"
 	"math/rand"
+	"flag"
 )
 
 type ProbMap map[int]Probs
@@ -50,19 +51,23 @@ var (
 
 func main() {
 	var grid Grid
-	grid = grid.create(numRws, numRws)
+
+	var numRwsP = flag.Int("nrws", numRws, "number of rows in a map")
+	var numRnsP = flag.Int("nrnds", numRnds, "number of rows in a map")
+	flag.Parse()
+	grid = grid.create(*numRwsP, *numRwsP)
 	grid = grid.rangeGrid(fillRandLand)
 	grid = grid.gnrtMp(0)
-	for i := 0; i < numRnds; i++ {
+	for i := 0; i < *numRnsP; i++ {
 		grid = grid.scale(2)
 		grid = grid.gnrtMp(1)
 	}
-	grid = grid.rangeGrid(fillRandTrrn)
+	// grid = grid.rangeGrid(fillRandTrrn)
 	// grid = grid.gnrtTrrn(true)
 	// grid = grid.gnrtTrrn(false)
 	fmt.Println(grid.String())
 	// for web
-	// fmt.Println(grid.JSON())
+	fmt.Println(grid.JSON())
 	// for terminal visualization
 	// fmt.Println(grid.GraphicString())
 }
