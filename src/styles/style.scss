@@ -103,10 +103,21 @@ a {
 	width: 90%;
 	margin: 10%;
 	outline: 0;
-	text-indent: 10px;
+	text-indent: 15px;
 	font-family: 'Blokus';
 	font-size: large;
 	border: 0;
+}
+.questSubmitButton {
+  width: 32px;
+  height: 32px;
+  float: right;
+  background-image: url(../assets/building.png);
+  background-size: 28px;
+  margin-top: -70px;
+  margin-left: 200px;
+  // z-index: 11111111;
+  position: absolute;
 }
 .map {
 	background-color: #fff;

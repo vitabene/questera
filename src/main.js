@@ -5,15 +5,9 @@ var HERO = {
 };
 
 var TERRAINS = {
-  0: "ocean",
-  1: "grass",
-  2: "forest",
-  3: "mountains",
-  4: "field",
-  5: "moor",
-  6: "pond",
-  7: "road",
-  8: "river",
+  0: "ocean", 1: "grass", 2: "forest",
+  3: "mountains", 4: "field", 5: "moor",
+  6: "pond", 7: "road", 8: "river",
 };
 
 var QUESTS = [
@@ -162,22 +156,22 @@ var Quest = React.createClass({
   }
 });
 
-// var MapQuest = React.createClass({
-//   render: function() {
-//     return (
-//       <div className="map-quest">
-//         <img className={this.props.quest.type} alt={this.props.quest.name}/>
-//       </div>
-//     );
-//   }
-// });
-
 var QuestField = React.createClass({
+  handleSubmit: function(e) {
+    e.preventDefault();
+    var questInput = React.findDOMNode(this.refs.quest);
+    if (questInput.value === '') return;
+    var inputDataObject = {};
+    inputDataObject.name = questInput.value;
+    this.props.addQuest(inputDataObject);
+    questInput.value = '';
+  },
   render: function() {
     return (
-      <div className="quest-field-box">
-        <input className="quest-field" id="questField"/>
-      </div>
+      <form onSubmit={this.handleSubmit} className="quest-field-box">
+        <input className="quest-field" ref="quest" id="questField"/>
+        <button className="questSubmitButton"></button>
+      </form>
     );
   }
 });
@@ -185,12 +179,12 @@ var QuestField = React.createClass({
 var Questboard = React.createClass({
   render: function() {
     var quests = [];
-    this.props.quests.forEach(function(quest) {
-        quests.push(<Quest quest={quest} key={quest.name}/>);
-    });
+    for (var i = this.props.quests.length - 1; i >= 0; i--) {
+        quests.push(<Quest quest={this.props.quests[i]} key={this.props.quests[i].created}/>);
+    };
     return (
       <div className="questboard" id="questboard">
-      <QuestField />
+      <QuestField addQuest={this.props.addQuest}/>
         {quests}
       </div>
     );
@@ -198,15 +192,35 @@ var Questboard = React.createClass({
 });
 
 var Game = React.createClass({
+  getInitialState: function(){
+    return {qid: 0, quests: []};
+  },
+  createQuest: function(inputQuestObject) {
+    return {
+      id: this.state.qid,
+      name: inputQuestObject.name,
+      type: "Monster",
+      done: false,
+      created: new Date().getTime()
+    };
+  },
+  addQuest: function(inputQuestObject){
+    var questToAdd = this.createQuest(inputQuestObject);
+    this.setState(function(previousState, currentProps) {
+      var newQuests = previousState.quests;
+      newQuests.push(questToAdd);
+      return {id: this.state.qid++, quests: newQuests};
+    });
+  },
   render: function(){
     return (
       <div>
         <Heroboard hero={this.props.hero} />
-        <Map map={this.props.map} quests={this.props.quests} mapobjects={this.props.mapobjects}/>
-        <Questboard quests={this.props.quests} />
+        <Map map={this.props.map} quests={this.state.quests} mapobjects={this.props.mapobjects}/>
+        <Questboard quests={this.state.quests} addQuest={this.addQuest} />
       </div>
     );
   }
 });
 
-React.render(<Game quests={QUESTS} mapobjects={MAPOBJECTS} map={MAP} hero={HERO} />, document.getElementById('game'));
+React.render(<Game mapobjects={MAPOBJECTS} map={MAP} hero={HERO} />, document.getElementById('game'));
