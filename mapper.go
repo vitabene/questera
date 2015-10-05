@@ -16,7 +16,7 @@ type IterateGrid func(Grid, int, int) Grid
 
 const (
 	numRws   = 5
-	numRnds  = 4
+	numRnds  = 3
 	contProb = 49
 	contIncr = 7
 )
@@ -62,12 +62,12 @@ func main() {
 		grid = grid.scale(2)
 		grid = grid.gnrtMp(1)
 	}
-	// grid = grid.rangeGrid(fillRandTrrn)
-	// grid = grid.gnrtTrrn(true)
+	grid = grid.rangeGrid(fillRandTrrn)
+	grid = grid.rangeGrid(gnrtTrrn)
 	// grid = grid.gnrtTrrn(false)
 	fmt.Println(grid.String())
 	// for web
-	fmt.Println(grid.JSON())
+	// fmt.Println(grid.JSON())
 	// for terminal visualization
 	// fmt.Println(grid.GraphicString())
 }
@@ -107,7 +107,17 @@ func gnrtTrrn(g Grid, i, j int) Grid {
 }
 
 func getTrrn(percentages map[int]int) int {
-	// temp
+	sum := 0
+	for i, v := range percentages {
+		percentages[i] = sum
+		sum += v
+	}
+	var rn = rand.Intn(sum)
+	for i := len(percentages); i >= 1; i-- {
+		if rn > percentages[i] {
+			return i
+		}
+	}
 	return 0
 }
 
