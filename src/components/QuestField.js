@@ -1,4 +1,4 @@
-var QuestField = React.createClass({
+var QuestField = module.exports = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
     var questInput = React.findDOMNode(this.refs.quest);

@@ -1,16 +1,11 @@
 // questera
 
-var Game = require('./components/Game.js');
+var Game = require('./components/Game');
 
-var HERO = {
+var HERO = {type: "hero",
   name: "Vita", craft: "Mage", avatar: "assets/hero.png"
 };
 
-var TERRAINS = {
-  0: "ocean", 1: "grass", 2: "forest",
-  3: "mountains", 4: "field", 5: "moor",
-  6: "pond", 7: "road", 8: "river",
-};
 
 var QUESTS = [
   {name: 'Build questera', type: 'Building', done: false, created: '1443601842862'},

@@ -1,4 +1,4 @@
-var Quest = React.createClass({
+var Quest = module.exports = React.createClass({
   render: function() {
     return (
       <div className="quest">

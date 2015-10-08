@@ -1,4 +1,8 @@
-var Game = React.createClass({
+var HeroBoard = require('./HeroBoard');
+var QuestBoard = require('./QuestBoard');
+var Map = require('./Map');
+
+var Game = module.exports = React.createClass({
   getInitialState: function(){
     return {qid: 0, quests: []};
   },
@@ -22,9 +26,9 @@ var Game = React.createClass({
   render: function(){
     return (
       <div>
-        <Heroboard hero={this.props.hero} />
-        <Map map={this.props.map} quests={this.state.quests} mapobjects={this.props.mapobjects}/>
-        <Questboard quests={this.state.quests} addQuest={this.addQuest} />
+        <HeroBoard hero={this.props.hero} />
+        <Map map={this.props.map} hero={this.props.hero} quests={this.state.quests} mapobjects={this.props.mapobjects}/>
+        <QuestBoard quests={this.state.quests} addQuest={this.addQuest} />
       </div>
     );
   }

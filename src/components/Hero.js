@@ -1,4 +1,4 @@
-var Hero = React.createClass({
+var Hero = module.exports =  React.createClass({
   render: function() {
     return (
       <div className="hero" id="hero">

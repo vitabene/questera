@@ -1,4 +1,5 @@
-var Heroboard = React.createClass({
+var Hero = require('./Hero');
+var Heroboard = module.exports = React.createClass({
   render: function() {
     return (
       <div className="heroboard" id="heroboard">
