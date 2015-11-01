@@ -13,3 +13,6 @@ Front-End - React for interface
 Back-End - server in Go
 
 Task runner - gulp
+
+Flux transformation beginning
+10/29 20:14:40

@@ -8,14 +8,14 @@ var gulp = require('gulp'),
 		browserSync = require('browser-sync').create();
 
 gulp.task('browserify', function() {
-	gulp.src('src/main.js')
+	gulp.src('app/main.js')
 		.pipe(plumber())
 		.pipe(browserify({transform: 'reactify', debug: true}))
 		.pipe(concat('main.js'))
 		.pipe(gulp.dest('build'));
-	gulp.src('src/views/*')
+	gulp.src('views/*')
 	  .pipe(gulp.dest('build'));
-	gulp.src('src/assets/*')
+	gulp.src('assets/*')
 	  .pipe(gulp.dest('build/assets'));
 });
 
@@ -26,7 +26,7 @@ gulp.task('browser-sync', function() {
 });
 
 gulp.task('sass', function () {
-  gulp.src('src/styles/*.scss')
+  gulp.src('styles/*.scss')
 		.pipe(sourcemaps.init())
     .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
 		.pipe(sourcemaps.write())
@@ -36,6 +36,7 @@ gulp.task('sass', function () {
 
 gulp.task('default', ['browser-sync', 'watch']);
 gulp.task('watch', function(){
-	gulp.watch('src/**/*.*', ['browserify', 'sass']);
-	gulp.watch('src/**/*.js').on('change', browserSync.reload);
+	gulp.watch('app/**/*.*', ['browserify']);
+	gulp.watch('styles/*.scss', ['sass']);
+	gulp.watch('app/**/*.js').on('change', browserSync.reload);
 });
