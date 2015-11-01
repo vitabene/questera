@@ -1,0 +1,140 @@
+@font-face {
+    font-family: Blokus;
+    src: url(../assets/Blokus.otf);
+}
+@font-face {
+    font-family: Venice;
+    src: url(../assets/VeniceClassic.ttf);
+}
+html, body {
+	width: 100%;
+	min-height: 100%;
+	margin: 0;
+	padding: 0;
+	font-family: 'Alagard';
+}
+a {
+	text-decoration: none;
+	color: #000;
+	:hover {
+		text-decoration: none;
+	}
+}
+.board {
+	position: fixed;
+	top: 0;
+	min-height: 100%;
+	width: 20%;
+	z-index: 10;
+	background-color: aliceblue;
+}
+.questboard {
+	@extend .board;
+	float: right;
+	right: 0;
+	border-left: 3px solid goldenrod;
+	.quest {
+		margin: 14%;
+		width: 72%;
+		position: relative;
+		display: block;
+		font-family: '';
+		&__image {
+			float: left;
+			width: 15%;
+			height: auto;
+		}
+		&__name {
+			float: left;
+			width: 82%;
+			font-family: 'Blokus';
+			height: 50px;
+			vertical-align: middle;
+			line-height: 100%;
+			padding-top: 3px;
+			padding-left: 3%;
+		}
+	}
+}
+.heroboard {
+	@extend .board;
+	float: left;
+	left: 0;
+	border-right: 3px solid goldenrod;
+	.hero {
+		width: 80%;
+		margin: 10%;
+		display: block;
+		&__avatar {
+			width: 30%;
+			float: left;
+			height: auto;
+		}
+		&__name {
+			width: 70%;
+			margin: 0;
+			font-family: 'Venice';
+			text-indent: 10px;
+			padding: 0;
+			height: 34px;
+			float: left;
+		}
+		&__craft {
+			margin: 0;
+			text-indent: 10px;
+			font-family: 'Blokus';
+			padding: 10px 0 0 0;
+			width: 70%;
+			float: left;
+		}
+	}
+}
+.quest-field-box {
+	width: 100%;
+	height: 80px;
+}
+.quest-field {
+	background-image: url(../assets/field.png);
+	background-size: 90%;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	height: 51px;
+	width: 90%;
+	margin: 10%;
+	outline: 0;
+	text-indent: 15px;
+	font-family: 'Blokus';
+	font-size: large;
+	border: 0;
+}
+.questSubmitButton {
+  width: 32px;
+  height: 32px;
+  float: right;
+  background-image: url(../assets/building.png);
+  background-size: 28px;
+  margin-top: -70px;
+  margin-left: 200px;
+  // z-index: 11111111;
+  position: absolute;
+}
+.map {
+	background-color: #fff;
+	margin: 0;
+	padding: 0;
+	width: 60%;
+	margin-left: 20%;
+	border-collapse: collapse;
+	top: 0;
+	left: 0;
+	min-height: 100%;
+	position: fixed;
+}
+.map-tile {
+}
+.ocean {
+	background-color: aqua;
+}
+.grass {
+	background-color: forestgreen;
+}

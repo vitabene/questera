@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Questera</title>
+	<link rel="stylesheet" href="./css/style.css" media="screen" title="no title" charset="utf-8">
+	<link rel="icon" href="./assets/favicon.png">
+</head>
+<body>
+	<div class="">
+		<h2>Log In</h2>
+		<form action="/login" method="POST">
+			<p><label for="email">Username</label><input type="text" name="email"  id="email"></p>
+			<p><label for="password">Password</label><input type="password" name="password"  id="password"></p>
+			<p><button class="button-primary">Log In</button></p>
+		</form>
+	</div>
+	<div class="">
+		<h2>Sign Up</h2>
+		<form action="/signup" method="POST">
+			<p>
+				<label for="name">Name</label>
+				<input type="text" name="name"  id="name">
+			</p>
+			<p>
+				<label for="email">Email</label>
+				<input type="text" name="email"  id="email">
+			</p>
+			<p>
+				<label for="password">Password</label>
+				<input type="password" name="password"  id="password">
+			</p>
+			<p>
+				<select class="" name="occupation">
+					<option value="0">Mage</option>
+				</select>
+			</p>
+			<p>
+				<label for="password_again">Password</label>
+				<input type="password" name="password_again"  id="password_again">
+			</p>
+			<p>
+				<button class="">Become a hero!</button></p>
+		</form>
+	</div>
+</body>
+</html>
