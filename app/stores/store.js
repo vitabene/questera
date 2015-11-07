@@ -1,6 +1,7 @@
 var assign = require('object-assign');
 var EventEmitterProto = require('events').EventEmitter.prototype;
-var CHANGE_EVENT = 'CHANGE';
+const CHANGE_EVENT = 'CHANGE';
+import Dispatcher from '../dispatcher'
 
 var storeMethods = {
 	init: function() {},
@@ -8,7 +9,6 @@ var storeMethods = {
 		var currIds = this._data.map(function(m) {
 			return m.Id;
 		});
-		console.log(arr)
 		arr.filter(function(item) {
 			return currIds.indexOf(item.Id) === -1;
 		}).forEach(this.add.bind(this));
@@ -21,7 +21,7 @@ var storeMethods = {
 	},
 	sort: function() {
 		this._data.sort(function(a, b) {
-			return +new Date(b.created) - +new Date(a.created);
+			return +new Date(b.Created) - +new Date(a.Created);
 		});
 	},
 	all: function() {
@@ -53,22 +53,14 @@ var storeMethods = {
 exports.extend = function(methods) {
 	var store = {
 		_data: [],
-		actions: {},
-		mixin: {
-			componentDidMount: function() {
-		    store.addChangeListener(this.onChange);
-		  },
-		  componentWillUnmount: function() {
-		    store.removeChangeListener(this.onChange);
-		  }
-		}
+		actions: {}
 	};
 
 	assign(store, EventEmitterProto, storeMethods, methods);
 
 	store.init();
 
-	require('../dispatcher').register(function(action) {
+	Dispatcher.register(function(action) {
 		if (store.actions[action.actionType]) {
 			store.actions[action.actionType].forEach(function(fn) {
 				fn.call(store, action.data);

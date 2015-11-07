@@ -1,14 +1,13 @@
-var Hero = require('./Hero');
-var React = require('react');
+import Hero from './Hero'
+import React, { PropTypes } from 'react'
 
-var Heroboard = React.createClass({
-  render: function() {
+class HeroBoard extends React.Component {
+  render () {
     return (
       <div className="heroboard" id="heroboard">
         <Hero hero={this.props.hero} key={this.props.hero.name}/>
       </div>
     );
   }
-});
-
-module.exports = Heroboard
+}
+export default HeroBoard

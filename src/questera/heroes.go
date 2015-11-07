@@ -1,12 +1,12 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	_ "github.com/ziutek/mymysql/native"
 	"log"
 	"net/http"
-	"errors"
-	"encoding/json"
 )
 
 type Hero struct {
@@ -50,7 +50,7 @@ func getHero(heroId int) []Hero {
 
 func heroPresent(r *http.Request) (int, error) {
 	cookie, err := r.Cookie("questera")
-	log.Printf("cookie: %s\n", cookie)
+	// log.Printf("cookie: %s\n", cookie)
 	if err != nil {
 		log.Printf("%s\n", err)
 		return 0, errors.New("no cookie set")
@@ -58,7 +58,7 @@ func heroPresent(r *http.Request) (int, error) {
 	// questera= [9:]
 	cookieStr := fmt.Sprintf("%s", cookie)
 	query := "SELECT * FROM conquests WHERE conquest_id='%s' LIMIT 1"
-	log.Printf("fucking query:\n%s\n", fmt.Sprintf(query, cookieStr[9:]))
+	// log.Printf("query:\n%s\n", fmt.Sprintf(query, cookieStr[9:]))
 	rows, res, err := db.Query(fmt.Sprintf(query, cookieStr[9:]))
 	if err != nil || len(rows) == 0 {
 		return 0, err

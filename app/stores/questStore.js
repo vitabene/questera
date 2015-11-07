@@ -1,10 +1,10 @@
 var constants = require('../constants');
 var HeroStore = require('./heroStore');
 
-var QuestStore = module.exports = require('./store').extend({
+var QuestStore = module.exports = require('./store.js').extend({
 	init: function() {
-		this.bind(constants.GOT_CHIRPS, this.set);
-		this.bind(constants.CHIRPED, this.add);
+		this.bind(constants.GOT_QUESTS, this.set);
+		this.bind(constants.CREATED_QUEST, this.add);
 	},
 	timeline: function() {
 		// var ids = [HeroStore.currentHero.cid].concat(HeroStore.currentHero.following);

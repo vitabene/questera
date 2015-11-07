@@ -1,18 +1,20 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
-var API = require('./api');
-var App = require('./components/App');
-var Home = require('./components/Home');
-var Welcome = require('./components/Welcome');
+import React from 'react'
+import ReactDOM from 'react-dom'
+import {Router, Route, IndexRoute, Link} from 'react-router'
+import App from './components/App'
+import Home from './components/Home'
+import Logout from './components/Logout'
+import API from './api'
 
-var ReactRouter = require('react-router');
-var Router = ReactRouter.Router;
-var Route = ReactRouter.Route;
-var IndexRoute = ReactRouter.IndexRoute;
-
-// API.startFetchingQuests();
-// API.startFetchingHeroes();
 API.fetchQuests();
 API.fetchHeroes();
-var root = <App />;
-ReactDOM.render(root, document.getElementById('app'));
+API.fetchMap();
+
+ReactDOM.render((
+  <Router>
+    <Route path="/" component={App}>
+      <IndexRoute component={Home}/>
+      <Route path="logout" component={Logout}/>
+    </Route>
+  </Router>
+), document.getElementById('app'))

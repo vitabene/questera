@@ -1,4 +1,4 @@
-var dispatcher = require('./dispatcher');
+import Dispatcher from './dispatcher'
 var constants = require('./constants');
 
 Object.keys(constants).forEach(function(key) {
@@ -8,7 +8,7 @@ Object.keys(constants).forEach(function(key) {
 	}).join('');
 
 	exports[funcName] = function(data) {
-		dispatcher.dispatch({
+		Dispatcher.dispatch({
 			actionType: constants[key],
 			data: data
 		});

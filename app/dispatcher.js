@@ -1,7 +1,9 @@
-var flux = require('flux');
+import flux from 'flux'
 
-var dispatcher = module.exports = new flux.Dispatcher();
+const Dispatcher = new flux.Dispatcher();
 
-dispatcher.register(function(action) {
+Dispatcher.register(function(action) {
 	console.log(action);
 });
+
+export default Dispatcher

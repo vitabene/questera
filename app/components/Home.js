@@ -1,33 +1,45 @@
-var React = require('react');
-var actions = require('../actions');
-var QuestStore = require('../stores/questStore');
-var HeroStore = require('../stores/heroStore');
-var HeroBoard = require('./HeroBoard');
-var QuestBoard = require('./QuestBoard');
+import actions from '../actions'
+import QuestStore from '../stores/questStore'
+import HeroStore from '../stores/heroStore'
+import HeroBoard from './HeroBoard'
+import Map from './Map'
+import QuestBoard from './QuestBoard'
+import React, { PropTypes } from 'react'
 
-var Home = React.createClass({
-  getInitialState: function() {
-    return {
+class Home extends React.Component {
+  constructor() {
+    super();
+    this.state = {
       quests: QuestStore.all(),
       hero: HeroStore.currentHero
     };
-  },
-  saveQuest: function (text) {
-      actions.createQuest(text);
-  },
-  mixins: [QuestStore.mixin],
-  onChange: function() {
-    this.setState(this.getInitialState());
-  },
-  render: function () {
-      return (
-        <div>
-          <HeroBoard hero={this.state.hero}/>
-          <Map quests={this.state.quests}/>
-          <QuestBoard addQuest={this.saveQuest} quests={this.state.quests}/>
-        </div>
-      );
+    this.onChange = this.onChange.bind(this)
   }
-});
-
-module.exports = Home;
+  saveQuest(text) {
+      actions.createQuest(text);
+  }
+  componentDidMount() {
+    QuestStore.addChangeListener(this.onChange);
+    HeroStore.addChangeListener(this.onChange);
+  }
+  componentWillUnmount() {
+    QuestStore.removeChangeListener(this.onChange);
+    HeroStore.removeChangeListener(this.onChange);
+  }
+  onChange() {
+    this.setState({
+      quests: QuestStore.all(),
+      hero: HeroStore.currentHero
+    });
+  }
+  render () {
+    return (
+      <div>
+        <HeroBoard hero={this.state.hero}/>
+        <Map />
+        <QuestBoard addQuest={this.saveQuest} quests={this.state.quests}/>
+      </div>
+    );
+  }
+}
+export default Home

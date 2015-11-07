@@ -1,11 +1,12 @@
-var React = require('react');
-var MapTile = require('./MapTile');
-var MapRow = module.exports = React.createClass({
-  render: function() {
-    var tiles = [];
-    var objects = this.props.rowObjects;
-    var hero;
-    var heroX = this.props.tiles.length/2;
+import MapTile from './MapTile'
+import React, { PropTypes } from 'react'
+
+class MapRow extends React.Component {
+  render () {
+    let tiles = [];
+    let objects = this.props.rowObjects;
+    let hero;
+    let heroX = this.props.tiles.length/2;
     this.props.tiles.forEach(function(tid, i) {
       if (i === heroX) {
         hero = objects;
@@ -18,4 +19,5 @@ var MapRow = module.exports = React.createClass({
       <tr>{tiles}</tr>
     );
   }
-});
+}
+export default MapRow

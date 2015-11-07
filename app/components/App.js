@@ -1,15 +1,22 @@
-var React = require('react');
-var HeroBoard = require('./HeroBoard');
-var QuestBoard = require('./QuestBoard');
-var Home = require('./Home');
+import React from 'react'
+import Home from './Home'
 
-var App = React.createClass({
-  render: function(){
+class App extends React.Component {
+  render () {
     return (
       <div>
-        <Home />
-      </div>
+        {this.props.children}
+        </div>
     );
   }
-});
-module.exports = App;
+}
+// const App = React.createClass({
+//   render() {
+//     return (
+//       <div>
+//       tats
+//       </div>
+//     );
+//   }
+// })
+export default App

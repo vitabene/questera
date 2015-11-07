@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/ziutek/mymysql/mysql"
 	_ "github.com/ziutek/mymysql/native"
@@ -9,7 +10,6 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
-	"encoding/json"
 )
 
 type Page struct {
@@ -89,38 +89,27 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	}
 }
 
-// routes:
-
-// dynamic ones:
-// /api/heroes/:hero_id - get
-// /api/quests/:hero_id - get, post
-// /api/quest/start/:q_id - post
-// /api/quest/complete/:q_id - post
-// /api/map/:hero_id
-
-// static ones:
-// /
-// /about
-// /login
-// /logout
-
 func main() {
 	db = mysql.New("tcp", "", "127.0.0.1:3306", "root", "", "questera")
 	err := db.Connect()
 	if err != nil {
 		fmt.Println("Database says: \n", err)
 	}
+
 	// check if logged in
 	http.HandleFunc("/", makeHandler(viewHandler))
 	http.HandleFunc("/api/hero/", makeHandler(heroHandler))
 	http.HandleFunc("/api/quests/", makeHandler(questHandler))
+	http.HandleFunc("/api/quests/create", createQuestHandler)
 	http.HandleFunc("/api/map/", makeHandler(mapHandler))
 	http.HandleFunc("/signup", signupHandler)
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/logout", logoutHandler)
-	// http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
+
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
 	http.Handle("/build/", http.StripPrefix("/build/", http.FileServer(http.Dir("build"))))
-	// http.Handle("/", http.FileServer(http.Dir("./build")))
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("build"))))
+
 	port := "8080"
 	log.Println("Server started: http://localhost:" + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))

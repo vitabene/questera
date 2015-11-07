@@ -1,15 +1,12 @@
-var React = require('react');
-var PropTypes = React.PropTypes;
+import React, { PropTypes } from 'react'
 
-var Welcome = React.createClass({
-  render: function() {
+class Welcome extends React.Component {
+  render () {
     return (
       <div>
         Welcome!
       </div>
     );
   }
-
-});
-
-module.exports = Welcome;
+}
+export default Welcome

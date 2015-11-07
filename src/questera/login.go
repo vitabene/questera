@@ -1,7 +1,7 @@
 package main
 
 import (
-  "crypto/sha256"
+	"crypto/sha256"
 	"fmt"
 	_ "github.com/ziutek/mymysql/native"
 	"log"
@@ -35,13 +35,13 @@ func initiateSession(heroId int, w http.ResponseWriter) error {
 		log.Println(err)
 		return err
 	}
-	cookie := http.Cookie{Name:"questera",  Value:conquestId, Path:"/", Expires: time.Now().Add(time.Hour), HttpOnly: true, MaxAge: 86400}
+	cookie := http.Cookie{Name: "questera", Value: conquestId, Path: "/", Expires: time.Now().Add(time.Hour), HttpOnly: true, MaxAge: 86400}
 	http.SetCookie(w, &cookie)
 	return nil
 }
 
 func destroySession(heroId int) {
-  query := "DELETE FROM conquests where hero_id=%d"
+	query := "DELETE FROM conquests where hero_id=%d"
 	_, _, err := db.Query(fmt.Sprintf(query, heroId))
 	if err != nil {
 		log.Println(err)
@@ -51,10 +51,10 @@ func destroySession(heroId int) {
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	heroId, err := heroPresent(r)
-  if err != nil {
+	if err != nil {
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
-  destroySession(heroId)
+	destroySession(heroId)
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
@@ -72,7 +72,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		id = row.Int(res.Map("id"))
 	}
 	err = initiateSession(id, w)
-  if err != nil {
+	if err != nil {
 		log.Println(err)
 		return
 	}

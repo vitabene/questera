@@ -1,32 +1,33 @@
 package main
 
 import (
-  "log"
-  "fmt"
-  "net/http"
-  "encoding/json"
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
 )
 
 type Map struct {
-	Id, Climate int
+	Id, Climate   int
 	Map, Position string
 }
 
-func loadMap(MapId string) Map {
-	var newMap Map
+func loadMap(MapId string) []Map {
+	var newMaps []Map
 	query := "SELECT * FROM maps WHERE id=" + MapId
 	log.Printf("%s\n", query)
 	rows, res, err := db.Query(query)
 	if err != nil {
 		log.Println(err)
-		return Map{}
+		return nil
 	}
 	for _, row := range rows {
 		id, climate := row.Int(res.Map("id")), row.Int(res.Map("climate"))
 		position, mapDB := row.Str(res.Map("position")), row.Str(res.Map("map"))
-    newMap = Map{Id: id, Position: position, Climate: climate, Map: mapDB}
+		newMap := &Map{Id: id, Position: position, Climate: climate, Map: mapDB}
+		newMaps = append(newMaps, *newMap)
 	}
-	return newMap
+	return newMaps
 }
 
 func mapHandler(w http.ResponseWriter, r *http.Request, name string) {
