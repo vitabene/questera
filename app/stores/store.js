@@ -6,11 +6,11 @@ var storeMethods = {
 	init: function() {},
 	set: function(arr) {
 		var currIds = this._data.map(function(m) {
-			return m.cid;
+			return m.Id;
 		});
-
+		console.log(arr)
 		arr.filter(function(item) {
-			return currIds.indexOf(item.cid) === -1;
+			return currIds.indexOf(item.Id) === -1;
 		}).forEach(this.add.bind(this));
 
 		this.sort();
@@ -21,7 +21,7 @@ var storeMethods = {
 	},
 	sort: function() {
 		this._data.sort(function(a, b) {
-			return +new Date(b.$created) - +new Date(a.$created);
+			return +new Date(b.created) - +new Date(a.created);
 		});
 	},
 	all: function() {
@@ -29,7 +29,7 @@ var storeMethods = {
 	},
 	get: function(id) {
 		return this._data.filter(function(item) {
-			return item.cid === id;
+			return item.Id === id;
 		})[0];
 	},
 	addChangeListener: function(fn) {

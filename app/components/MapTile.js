@@ -1,3 +1,4 @@
+var React = require('react');
 var MapTile = module.exports = React.createClass({
   render: function() {
     var object = this.props.tileObject;

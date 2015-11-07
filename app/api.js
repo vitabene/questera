@@ -7,7 +7,7 @@ var API = module.exports = {
 		get('/api/quests').then(actions.gotQuests.bind(actions));
 	},
 	fetchHeroes: function() {
-		get('/api/heroes').then(actions.gotHeroes.bind(actions));
+		get('/api/hero').then(actions.gotHeroes.bind(actions));
 	},
 	// startFetchingQuests: function(){
 	// 	this.fetchQuests();

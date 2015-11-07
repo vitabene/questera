@@ -1,3 +1,4 @@
+var React = require('react');
 var MapTile = require('./MapTile');
 var MapRow = module.exports = React.createClass({
   render: function() {

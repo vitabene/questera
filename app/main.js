@@ -1,22 +1,18 @@
 var React = require('react');
-var ReactRouter = require('react-router');
-var Route = ReactRouter.Route;
+var ReactDOM = require('react-dom');
 var API = require('./api');
+var App = require('./components/App');
+var Home = require('./components/Home');
+var Welcome = require('./components/Welcome');
 
-var routes = (
-  <Route handler={require('./components/App')}>
-    <Route path='/' component={require('./components/Home')}/>
-  </Route>
-);
+var ReactRouter = require('react-router');
+var Router = ReactRouter.Router;
+var Route = ReactRouter.Route;
+var IndexRoute = ReactRouter.IndexRoute;
 
-// <Route name='heroes' handler={require('./components/HeroList')}/>
-// <Route name='hero' path='/hero/:id' handler={require('./components/HeroProfile')}/>
 // API.startFetchingQuests();
 // API.startFetchingHeroes();
 API.fetchQuests();
 API.fetchHeroes();
-
-// ReactRouter.run(routes, ReactRouter.HistoryLocation, function(Root){
-//   React.render(<Root />, document.getElementById('app'));
-// });
-React.render(<ReactRouter>{routes}</ReactRouter>, document.getElementById('app'));
+var root = <App />;
+ReactDOM.render(root, document.getElementById('app'));

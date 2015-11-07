@@ -29,7 +29,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 
 func initiateSession(heroId int, w http.ResponseWriter) error {
 	conquestId := RandStringBytes(64)
-	query := "INSERT INTO conquests (conquest_id, hero_id, last_seen) VALUES ('%s', %d, CURRENT_TIMESTAMP())"
+	query := "INSERT INTO conquests (conquest_id, hero_id, last_seen) VALUES ('%s', '%d', CURRENT_TIMESTAMP())"
 	_, _, err := db.Query(fmt.Sprintf(query, conquestId, heroId))
 	if err != nil {
 		log.Println(err)

@@ -1,5 +1,7 @@
 var Hero = require('./Hero');
-var Heroboard = module.exports = React.createClass({
+var React = require('react');
+
+var Heroboard = React.createClass({
   render: function() {
     return (
       <div className="heroboard" id="heroboard">
@@ -8,3 +10,5 @@ var Heroboard = module.exports = React.createClass({
     );
   }
 });
+
+module.exports = Heroboard

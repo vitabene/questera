@@ -1,3 +1,4 @@
+var React = require('react');
 var Quest = module.exports = React.createClass({
   render: function() {
     return (

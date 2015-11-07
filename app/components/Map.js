@@ -1,4 +1,6 @@
 var MapRow = require('./MapRow');
+var React = require('react');
+
 var Map = module.exports = module.exports = React.createClass({
   render: function() {
     // basic map

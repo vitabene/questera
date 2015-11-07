@@ -19,20 +19,12 @@ type Page struct {
 var (
 	templates     = template.Must(template.ParseFiles("views/index.html", "views/app.html"))
 	staticRoutes  = []string{"/login", "/logout", "/about"}
-	dynamicRoutes = regexp.MustCompile("^/api/(heroes|quests|map)/?(create|start|complete)?/?([0-9]+)?$")
+	dynamicRoutes = regexp.MustCompile("^/api/(hero|quests|map)/?(create|start|complete)?/?([0-9]+)?$")
 	db            mysql.Conn
 )
 
 func loadPage(title, hero string) (*Page, error) {
 	return &Page{Title: title, Hero: hero}, nil
-}
-
-func heroHandler(w http.ResponseWriter, r *http.Request, name string) {
-	fmt.Fprint(w, string(name))
-}
-
-func mapHandler(w http.ResponseWriter, r *http.Request, name string) {
-	fmt.Fprint(w, string(name))
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request, name string) {
@@ -44,6 +36,7 @@ func viewHandler(w http.ResponseWriter, r *http.Request, name string) {
 			return
 		}
 		renderTemplate(w, name, p)
+		return
 	}
 	hero := getHero(heroId)
 	heroJson, err := json.Marshal(hero)
@@ -57,6 +50,7 @@ func viewHandler(w http.ResponseWriter, r *http.Request, name string) {
 		return
 	}
 	renderTemplate(w, "app", p)
+	return
 }
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
@@ -118,14 +112,14 @@ func main() {
 	}
 	// check if logged in
 	http.HandleFunc("/", makeHandler(viewHandler))
-	http.HandleFunc("/api/heroes/", makeHandler(heroHandler))
+	http.HandleFunc("/api/hero/", makeHandler(heroHandler))
 	http.HandleFunc("/api/quests/", makeHandler(questHandler))
 	http.HandleFunc("/api/map/", makeHandler(mapHandler))
 	http.HandleFunc("/signup", signupHandler)
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/logout", logoutHandler)
-
-	// http.Handle("/build/", http.StripPrefix("/build/", http.FileServer(http.Dir("js"))))
+	// http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
+	http.Handle("/build/", http.StripPrefix("/build/", http.FileServer(http.Dir("build"))))
 	// http.Handle("/", http.FileServer(http.Dir("./build")))
 	port := "8080"
 	log.Println("Server started: http://localhost:" + port)

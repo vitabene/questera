@@ -1,19 +1,27 @@
+var React = require('react');
 var QuestField = module.exports = React.createClass({
-  handleSubmit: function(e) {
-    e.preventDefault();
-    var questInput = React.findDOMNode(this.refs.quest);
-    if (questInput.value === '') return;
-    var inputDataObject = {};
-    inputDataObject.name = questInput.value;
-    this.props.addQuest(inputDataObject);
-    questInput.value = '';
+  getInitialState: function() {
+    return {
+      value: ''
+    };
+  },
+  handleChange: function (evt) {
+      this.setState({
+          value: evt.target.value
+      });
+  },
+  handleClick: function (evt) {
+      this.props.addQuest(this.state.value);
+      this.setState({
+          value: ''
+      });
   },
   render: function() {
     return (
-      <form onSubmit={this.handleSubmit} className="quest-field-box">
-        <input className="quest-field" ref="quest" id="questField"/>
-        <button className="questSubmitButton"></button>
-      </form>
+      <div className="quest-field-box">
+        <input className="quest-field" placeholder='What have you got to do?' value={this.state.value} onChange={this.handleChange} id="questField"/>
+        <button className="questSubmitButton" onClick={this.handleClick}></button>
+      </div>
     );
   }
 });

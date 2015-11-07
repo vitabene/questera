@@ -1,3 +1,4 @@
+var React = require('react');
 
 var MapObject = module.exports = React.createClass({
   render: function() {

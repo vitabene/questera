@@ -1,4 +1,5 @@
-var Hero = module.exports =  React.createClass({
+var React = require('react');
+var Hero = module.exports = React.createClass({
   render: function() {
     return (
       <div className="hero" id="hero">
