@@ -1,9 +1,24 @@
 package main
 
 import (
+	"log"
 	"math/rand"
+	"net/http"
 	"time"
 )
+
+func isFound(w http.ResponseWriter, r *http.Request, err error) {
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+}
+
+func isFatal(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 

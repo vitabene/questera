@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	_ "github.com/ziutek/mymysql/native"
-	"log"
+	"gopkg.in/mgo.v2/bson"
 	"net/http"
+	"strconv"
 )
 
 type Quest struct {
@@ -21,69 +22,48 @@ func createQuestHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var q QuestJSON
 	err := decoder.Decode(&q)
-	if err != nil {
-		panic(err)
-	}
+	isFatal(err)
 	heroId, err := heroPresent(r)
-	if err != nil {
-		panic(err)
-	}
-	err = createQuest(q.Text, q.Type, q.Created, heroId)
-	if err != nil {
-		panic(err)
-	}
+	isFatal(err)
+	created, err := strconv.Atoi(q.Created)
+	isFatal(err)
+	err = createQuest(q.Text, q.Type, created, heroId)
+	isFatal(err)
 	heroLoggedId := fmt.Sprintf("%d", heroId)
-	quests := loadQuests(heroLoggedId)
-	jsonQuests, err := json.Marshal(quests)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	jsonQuests, err := json.Marshal(loadQuests(heroLoggedId))
+	isFatal(err)
 	fmt.Fprint(w, string(jsonQuests))
 }
 
-func createQuest(questName, questType, created string, heroLoggedId int) error {
-	heroId := fmt.Sprintf("%d", heroLoggedId)
-	query := "INSERT INTO quests (hero_id, name, type, created, completed) VALUES ('" + heroId + "', '" + questName + "','" + questType + "','" + created + "', '0')"
-	_, _, err := db.Query(query)
-	if err != nil {
-		return err
-	}
+func createQuest(questName, questType string, created, heroLoggedId int) error {
+	c := db.C("quests")
+	err := c.Insert(&Quest{
+		HeroId:    heroLoggedId,
+		Name:      questName,
+		Type:      questType,
+		Created:   created,
+		Completed: 0,
+	})
+	isFatal(err)
 	return nil
 }
 
 func loadQuests(HeroId string) []Quest {
 	var quests []Quest
-	query := "SELECT * FROM quests WHERE hero_id=" + HeroId
-	rows, res, err := db.Query(query)
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-	for _, row := range rows {
-		id, heroId := row.Int(res.Map("id")), row.Int(res.Map("hero_id"))
-		created, completed := row.Int(res.Map("created")), row.Int(res.Map("completed"))
-		questName, questType := row.Str(res.Map("name")), row.Str(res.Map("type"))
-		quest := &Quest{Id: id, HeroId: heroId, Created: created, Completed: completed, Name: questName, Type: questType}
-		quests = append(quests, *quest)
-	}
+	iter := db.C("quests").Find(bson.M{"HeroId": HeroId}).Iter()
+	err := iter.All(&quests)
+	isFatal(err)
 	return quests
 }
 
 func questHandler(w http.ResponseWriter, r *http.Request, name string) {
 	if name == "" {
 		heroId, err := heroPresent(r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
+		isFatal(err)
 		heroLoggedId := fmt.Sprintf("%d", heroId)
 		quests := loadQuests(heroLoggedId)
 		jsonQuests, err := json.Marshal(quests)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+		isFatal(err)
 		fmt.Fprint(w, string(jsonQuests))
 	}
 }

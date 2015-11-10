@@ -18,6 +18,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	byteSum := hash.Sum(nil)
 	hashedPw := fmt.Sprintf("%x", byteSum)
 	defAvatarUrl := "images/hero.png"
+	// redo with mongo
 	query := "INSERT INTO heroes (name, occupation, avatar_url, email, salt, password) VALUES ('%s', '%d', '%s', '%s', '%s', '%s')"
 	_, _, err := db.Query(fmt.Sprintf(query, name, occupation, defAvatarUrl, email, salt, hashedPw))
 	if err != nil {

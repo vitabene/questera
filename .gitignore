@@ -1,2 +1,5 @@
 /assets
+/pkg
+/src/github.com
+/src/gopkg.in
 /node_modules

@@ -2,9 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/ziutek/mymysql/mysql"
-	_ "github.com/ziutek/mymysql/native"
+	"gopkg.in/mgo.v2"
 	"html/template"
 	"log"
 	"net/http"
@@ -20,37 +18,20 @@ var (
 	templates     = template.Must(template.ParseFiles("views/index.html", "views/app.html"))
 	staticRoutes  = []string{"/login", "/logout", "/about"}
 	dynamicRoutes = regexp.MustCompile("^/api/(hero|quests|map)/?(create|start|complete)?/?([0-9]+)?$")
-	db            mysql.Conn
+	db            *mgo.Database
+	session       *mgo.Session
 )
-
-func loadPage(title, hero string) (*Page, error) {
-	return &Page{Title: title, Hero: hero}, nil
-}
 
 func viewHandler(w http.ResponseWriter, r *http.Request, name string) {
 	heroId, err := heroPresent(r)
 	if err != nil {
-		p, err := loadPage("Questera", "{}")
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
+		p := &Page{Title: "Questera", Hero: "{}"}
 		renderTemplate(w, name, p)
-		return
 	}
-	hero := getHero(heroId)
-	heroJson, err := json.Marshal(hero)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	p, err := loadPage("Questera", string(heroJson))
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
+	heroJson, err := json.Marshal(getHero(heroId))
+	isFatal(err)
+	p := &Page{Title: "Questera", Hero: string(heroJson)}
 	renderTemplate(w, "app", p)
-	return
 }
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
@@ -90,13 +71,14 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 }
 
 func main() {
-	db = mysql.New("tcp", "", "127.0.0.1:3306", "root", "", "questera")
-	err := db.Connect()
+	session, err := mgo.Dial("localhost")
 	if err != nil {
-		fmt.Println("Database says: \n", err)
+		panic(err)
 	}
+	defer session.Close()
+	session.SetMode(mgo.Monotonic, true)
+	db := session.DB("questera")
 
-	// check if logged in
 	http.HandleFunc("/", makeHandler(viewHandler))
 	http.HandleFunc("/api/hero/", makeHandler(heroHandler))
 	http.HandleFunc("/api/quests/", makeHandler(questHandler))
