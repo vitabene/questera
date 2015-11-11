@@ -26,12 +26,14 @@ func viewHandler(w http.ResponseWriter, r *http.Request, name string) {
 	heroId, err := heroPresent(r)
 	if err != nil {
 		p := &Page{Title: "Questera", Hero: "{}"}
-		renderTemplate(w, name, p)
+		renderTemplate(w, "index", p)
+		return
 	}
 	heroJson, err := json.Marshal(getHero(heroId))
 	isFatal(err)
 	p := &Page{Title: "Questera", Hero: string(heroJson)}
 	renderTemplate(w, "app", p)
+	return
 }
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
@@ -77,7 +79,8 @@ func main() {
 	}
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
-	db := session.DB("questera")
+	db = session.DB("questera")
+	log.Println("db good")
 
 	http.HandleFunc("/", makeHandler(viewHandler))
 	http.HandleFunc("/api/hero/", makeHandler(heroHandler))
@@ -93,6 +96,6 @@ func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("build"))))
 
 	port := "8080"
-	log.Println("Server started: http://localhost:" + port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Println("Server started: http://localhost:" + port + "\n\n\n\n\n")
+	log.Fatal(http.ListenAndServe(":" + port, nil))
 }

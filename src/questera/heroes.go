@@ -3,18 +3,20 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
 )
 
 type Hero struct {
 	Id, Occupation         int
-	Name, AvatarUrl, Email string
+	Name, AvatarUrl, Email, Salt, Password string
 }
 
 type Conquest struct {
 	ConquestId string
-	HeroId     int
+	HeroId int
+	ConquestBegun, LastSeen int64
 }
 
 func heroHandler(w http.ResponseWriter, r *http.Request, name string) {
@@ -37,7 +39,10 @@ func getHero(heroId int) []Hero {
 
 func heroPresent(r *http.Request) (int, error) {
 	cookie, err := r.Cookie("questera")
-	isFatal(err)
+	if err != nil {
+		log.Println(err)
+		return -1, err
+	}
 	// log.Printf("cookie: %s\n", cookie)
 	// questera= [9:]
 	cookieStr := fmt.Sprintf("%s", cookie)
