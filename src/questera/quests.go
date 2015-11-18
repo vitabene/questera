@@ -3,15 +3,24 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	_ "github.com/ziutek/mymysql/native"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"strconv"
 )
 
 type Quest struct {
-	Id, HeroId, Created, Completed int
-	Name, Type                     string
+	Id        bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	HeroId    bson.ObjectId `json:"heroId"`
+	Created   int           `json:"created"`
+	Completed int           `json:"completed"`
+	Name      string        `json:"name"`
+	Type      string        `json:"type"`
+}
+
+var questCollection = "quests"
+
+type QuestResource struct {
+	Data Quest `json:"data"`
 }
 
 type QuestJSON struct {
@@ -35,8 +44,8 @@ func createQuestHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(jsonQuests))
 }
 
-func createQuest(questName, questType string, created, heroLoggedId int) error {
-	c := db.C("quests")
+func createQuest(questName, questType string, created int, heroLoggedId bson.ObjectId) error {
+	c := db.C(questCollection)
 	err := c.Insert(&Quest{
 		HeroId:    heroLoggedId,
 		Name:      questName,
@@ -50,7 +59,7 @@ func createQuest(questName, questType string, created, heroLoggedId int) error {
 
 func loadQuests(HeroId string) []Quest {
 	var quests []Quest
-	iter := db.C("quests").Find(bson.M{"HeroId": HeroId}).Iter()
+	iter := db.C(questCollection).Find(bson.M{"heroId": HeroId}).Iter()
 	err := iter.All(&quests)
 	isFatal(err)
 	return quests
@@ -62,8 +71,7 @@ func questHandler(w http.ResponseWriter, r *http.Request, name string) {
 		isFatal(err)
 		heroLoggedId := fmt.Sprintf("%d", heroId)
 		quests := loadQuests(heroLoggedId)
-		jsonQuests, err := json.Marshal(quests)
-		isFatal(err)
-		fmt.Fprint(w, string(jsonQuests))
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(quests)
 	}
 }

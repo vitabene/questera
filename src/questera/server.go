@@ -97,5 +97,5 @@ func main() {
 
 	port := "8080"
 	log.Println("Server started: http://localhost:" + port + "\n\n\n\n\n")
-	log.Fatal(http.ListenAndServe(":" + port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

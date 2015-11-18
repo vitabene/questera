@@ -2,12 +2,12 @@ package main
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
-  "encoding/hex"
+	"log"
 	"net/http"
 	"strconv"
-	"log"
 	"time"
 )
 
@@ -19,43 +19,47 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	byteSum := hash.Sum(nil)
 	hashedPw := fmt.Sprintf("%x", byteSum)
 	defAvatarUrl := "images/hero.png"
+	log.Printf("%s\n", hashedPw)
 	intOccupation, err := strconv.Atoi(occupation)
 	isFatal(err)
 	c := db.C("heroes")
 	err = c.Insert(&Hero{
-		Name:      name,
-		Occupation:  intOccupation,
-		AvatarUrl:   defAvatarUrl,
-		Email: email,
-		Password: hashedPw,
+		Name:       name,
+		Occupation: intOccupation,
+		AvatarUrl:  defAvatarUrl,
+		Email:      email,
+		Password:   hashedPw,
 	})
 	isFatal(err)
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-func initiateSession(heroId int, w http.ResponseWriter) error {
-	conquestId := RandStringBytes(64)
+func initiateSession(heroId bson.ObjectId, w http.ResponseWriter) error {
+	// conquestId := RandStringBytes(64)
+	conquestId := bson.NewObjectId()
+	log.Printf("%s\n", conquestId)
 	c := db.C("conquests")
 	err := c.Insert(&Conquest{
-		HeroId: heroId,
+		ConquestId: conquestId,
+		HeroId:        heroId,
 		ConquestBegun: time.Now().UnixNano(),
-		LastSeen: time.Now().UnixNano(),
+		LastSeen:      time.Now().UnixNano(),
 	})
 	isFatal(err)
 	cookie := http.Cookie{
-		Name: "questera",
-		Value: conquestId,
-		Path: "/",
-		Expires: time.Now().Add(time.Hour*168),
+		Name:     "questera",
+		Value:    fmt.Sprintf("%v", conquestId.Hex()),
+		Path:     "/",
+		Expires:  time.Now().Add(time.Hour * 168),
 		HttpOnly: true,
-		MaxAge: 604800,
+		MaxAge:   604800,
 	}
 	http.SetCookie(w, &cookie)
 	return nil
 }
 
-func destroySession(heroId int) {
-	err := db.C("conquests").Remove(bson.M{"HeroId": heroId})
+func destroySession(heroId bson.ObjectId) {
+	err := db.C("conquests").Remove(bson.M{"_id": heroId})
 	isFatal(err)
 }
 
@@ -71,19 +75,20 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	pw := r.FormValue("password")
-	log.Printf("email:%s\npassword:%s\n", email, pw)
+	// log.Printf("email:%s\npassword:%s\n", email, pw)
 	hash := sha256.New()
-	data := []byte(email+pw)
-	log.Printf("%s\n", data)
+	data := []byte(email + pw)
+	// log.Printf("%s\n", data)
 	hash.Write(data)
 	md := hash.Sum(nil)
 	mdStr := hex.EncodeToString(md)
 	log.Printf("%s\n", mdStr)
-	return
+	// return
 	var hero Hero
-	err := db.C("heroes").Find(bson.M{"Email": email, "Password": mdStr}).One(&hero)
-	isFatal(err)
+	err := db.C("heroes").Find(bson.M{"email": email, "password": mdStr}).One(&hero)
+	hasError(err)
+	log.Printf("hero: %v\n", hero)
 	err = initiateSession(hero.Id, w)
-	isFatal(err)
+	hasError(err)
 	http.Redirect(w, r, "/", http.StatusFound)
 }

@@ -14,7 +14,7 @@ func isFound(w http.ResponseWriter, r *http.Request, err error) {
 	}
 }
 
-func hasError(err error)  {
+func hasError(err error) {
 	if err != nil {
 		log.Println(err)
 		return
