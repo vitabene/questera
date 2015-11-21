@@ -9,6 +9,12 @@
 <body>
 	<div id="app"></div>
 	<script type="text/javascript">
+		// constants for the whole app
+		const TERRAINS = {
+			0: "ocean", 1: "grass", 2: "forest",
+			3: "mountains", 4: "field", 5: "moor",
+			6: "pond", 7: "road", 8: "river",
+		};
 		var HERO = JSON.parse({{.Hero}})
 	</script>
 	<script src="./build/main.js"></script>

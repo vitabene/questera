@@ -6,6 +6,9 @@ var HeroStore = module.exports = require('./store.js').extend({
   },
   currentHero: HERO,
   updateHero: function(data) {
-    this.currentHero = data;
+    this._data = data;
+  },
+  getHero: function() {
+    return this._data[0] ? this._data[0] : this.currentHero
   }
 });

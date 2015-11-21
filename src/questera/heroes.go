@@ -12,10 +12,11 @@ type Hero struct {
 	Id         bson.ObjectId `json:"id" bson:"_id,omitempty"`
 	Occupation int           `json:"occupation"`
 	Name       string        `json:"name"`
-	AvatarUrl  string        `json:"avatarUrl"`
+	AvatarUrl  string        `json:"avatarUrl" bson:"avatarurl"`
 	Email      string        `json:"email"`
 	Password   string        `json:"password"`
-	MapId			 bson.ObjectId `json:"mapId"`
+	MapId      bson.ObjectId `json:"mapId"`
+	Coords     Coord         `json:"coords"`
 }
 
 type Conquest struct {
@@ -55,9 +56,9 @@ func heroPresent(r *http.Request) (bson.ObjectId, error) {
 	cookieStr = fmt.Sprintf("%s", cookieStr[9:])
 	var conquest Conquest
 	// log.Println(cookieStr)
-	err = db.C("conquests").Find(bson.M{"_id":bson.ObjectIdHex(cookieStr)}).One(&conquest)
+	err = db.C("conquests").Find(bson.M{"_id": bson.ObjectIdHex(cookieStr)}).One(&conquest)
 	// err = db.C("conquests").FindId(cookieStr[9:]).One(&conquest)
-	log.Printf("session: %v\n", conquest)
+	// log.Printf("session: %v\n", conquest)
 	if err != nil {
 		log.Println(err)
 		log.Println("conquest not found")

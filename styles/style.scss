@@ -115,7 +115,6 @@ a {
   background-size: 28px;
   margin-top: -70px;
   margin-left: 200px;
-  // z-index: 11111111;
   position: absolute;
 }
 .map {
@@ -128,9 +127,18 @@ a {
 	top: 0;
 	left: 0;
 	min-height: 100%;
+  overflow: hidden;
 	position: fixed;
 }
+$tile-size: 23px;
 .map-tile {
+  width: $tile-size;
+  height: $tile-size;
+  float: left;
+}
+.map-row {
+  width: 100%;
+  height: $tile-size;
 }
 .ocean {
 	background-color: aqua;

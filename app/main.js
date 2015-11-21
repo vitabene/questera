@@ -9,6 +9,7 @@ import API from './api'
 API.fetchQuests();
 API.fetchHeroes();
 API.fetchMap();
+API.fetchObjects();
 
 ReactDOM.render((
   <Router>

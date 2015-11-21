@@ -3,20 +3,30 @@ var gulp = require('gulp'),
 		sass = require('gulp-ruby-sass'),
 		browserSync = require('browser-sync').create();
 
+// gulp.task('sass', function () {
+//   gulp.src('styles/*.scss')
+// 		.pipe(sourcemaps.init())
+//     .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
+// 		.pipe(sourcemaps.write())
+//     .pipe(gulp.dest('build/css'))
+// 		.pipe(browserSync.stream());
+// });
 gulp.task('sass', function () {
-  gulp.src('styles/*.scss')
-		.pipe(sourcemaps.init())
-    .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
-		.pipe(sourcemaps.write())
-    .pipe(gulp.dest('build/css'))
-		.pipe(browserSync.stream());
+  return sass('styles/*.scss', { sourcemap: true })
+    .on('error', sass.logError)
+    .pipe(sourcemaps.write())
+    .pipe(sourcemaps.write('maps', {
+      includeContent: false,
+      sourceRoot: 'source'
+    }))
+    .pipe(gulp.dest('build/css'));
 });
 
 gulp.task('default', ['browser-sync', 'watch']);
 
 gulp.task('watch', function(){
 	gulp.watch('styles/*.scss', ['sass']);
-	gulp.watch('app/**/*.js').on('change', browserSync.reload);
+	// gulp.watch('app/**/*.js').on('change', browserSync.reload);
 });
 
 gulp.task('move', function() {

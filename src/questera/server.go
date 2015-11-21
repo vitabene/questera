@@ -17,7 +17,7 @@ type Page struct {
 var (
 	templates     = template.Must(template.ParseFiles("views/index.html", "views/app.html"))
 	staticRoutes  = []string{"/login", "/logout", "/about"}
-	dynamicRoutes = regexp.MustCompile("^/api/(hero|quests|map)/?(create|start|complete)?/?([0-9]+)?$")
+	dynamicRoutes = regexp.MustCompile("^/api/(hero|quests|objects|map)/?(create|start|complete)?/?([0-9]+)?$")
 	db            *mgo.Database
 	session       *mgo.Session
 )
@@ -80,11 +80,11 @@ func main() {
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
 	db = session.DB("questera")
-	log.Println("db good")
 
 	http.HandleFunc("/", makeHandler(viewHandler))
 	http.HandleFunc("/api/hero/", makeHandler(heroHandler))
 	http.HandleFunc("/api/quests/", makeHandler(questHandler))
+	http.HandleFunc("/api/objects/", makeHandler(mapObjectHandler))
 	http.HandleFunc("/api/quests/create", createQuestHandler)
 	http.HandleFunc("/api/map/", makeHandler(mapHandler))
 	http.HandleFunc("/signup", signupHandler)
@@ -96,6 +96,6 @@ func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("build"))))
 
 	port := "8080"
-	log.Println("Server started: http://localhost:" + port + "\n\n\n\n\n")
+	log.Println("Here be dragons: http://localhost:" + port + "\n")
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

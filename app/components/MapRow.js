@@ -4,19 +4,14 @@ import React, { PropTypes } from 'react'
 class MapRow extends React.Component {
   render () {
     let tiles = [];
-    let objects = this.props.rowObjects;
-    let hero;
-    let heroX = this.props.tiles.length/2;
-    this.props.tiles.forEach(function(tid, i) {
-      if (i === heroX) {
-        hero = objects;
-      } else {
-        hero = {};
-      }
-      tiles.push(<MapTile tileObject={hero} tid={tid}/>)
+    this.props.tiles.forEach(function(ti, i) {
+      let object = {}
+      tiles.push(
+        <MapTile tileObject={object} tid={ti}/>
+      );
     });
     return (
-      <tr>{tiles}</tr>
+      <div className="map-row">{tiles}</div>
     );
   }
 }

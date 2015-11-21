@@ -1,52 +1,55 @@
 import React, { PropTypes } from 'react'
 import MapRow from './MapRow'
 import MapStore from '../stores/mapStore'
+import MapObjectStore from '../stores/mapObjectStore'
 import HeroStore from '../stores/heroStore'
 
 class Map extends React.Component {
   constructor() {
     super();
     this.state = {
-      map: MapStore.currentMap,
-      hero: HeroStore.currentHero
+      map: MapStore.currentMap(),
+      hero: HeroStore.currentHero,
+      objects: MapObjectStore.all()
     };
     this.onChange = this.onChange.bind(this)
   }
   componentDidMount() {
     MapStore.addChangeListener(this.onChange);
     HeroStore.addChangeListener(this.onChange);
+    MapObjectStore.addChangeListener(this.onChange);
   }
   componentWillUnmount() {
     MapStore.removeChangeListener(this.onChange);
     HeroStore.removeChangeListener(this.onChange);
+    MapObjectStore.removeChangeListener(this.onChange);
   }
   onChange() {
     this.setState({
       map: MapStore.currentMap(),
-      hero: HeroStore.currentHero
+      hero: HeroStore.currentHero,
+      objects: MapObjectStore.all()
     });
   }
   render () {
-    // var grid = [];
-    // var hero = this.props.hero;
-    // var heroY = this.props.map.map.length/2;
-    // this.props.map.map.forEach(function(row, i) {
-    //   var objects = [];
-    //   if (i === heroY) objects = hero;
-    //   grid.push(<MapRow tiles={row} rowObjects={objects} key={i}/>)
-    // });
+    var grid = [];
+    if (this.state.map != undefined && this.state.map.map != undefined) {
+      this.state.map.map.forEach(function(row, i) {
+        grid.push(
+          <MapRow tiles={row} key={i} tid={i}/>
+        );
+      });
+    }
     return (
       <div className="map" id="map">
-        <p>{JSON.stringify(this.state.map)}</p>
+        <div id="terrainLayer" className="terrain-layer">
+          {grid}
+        </div>
+        <div id="objectLayer" className="object-layer">
+          objectLayer
+        </div>
       </div>
     );
-    // return (
-    //   <table className="map" id="map">
-    //     <tr>
-    //     <td>{this.state.map }</td>
-    //     </tr>
-    //   </table>
-    // );
   }
 }
 export default Map

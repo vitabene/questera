@@ -11,7 +11,7 @@ class Home extends React.Component {
     super();
     this.state = {
       quests: QuestStore.all(),
-      hero: HeroStore.currentHero
+      hero: HeroStore.getHero()
     };
     this.onChange = this.onChange.bind(this)
   }
@@ -29,14 +29,14 @@ class Home extends React.Component {
   onChange() {
     this.setState({
       quests: QuestStore.all(),
-      hero: HeroStore.currentHero
+      hero: HeroStore.getHero()
     });
   }
   render () {
     return (
       <div>
         <HeroBoard hero={this.state.hero}/>
-        <Map />
+        <Map hero={this.state.hero}/>
         <QuestBoard addQuest={this.saveQuest} quests={this.state.quests}/>
       </div>
     );

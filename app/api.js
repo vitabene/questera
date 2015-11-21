@@ -12,6 +12,9 @@ const API = {
 	fetchMap: function() {
 		get('/api/map').then(actions.gotMap.bind(actions));
 	},
+	fetchObjects: function() {
+		get('/api/objects').then(actions.gotMapObjects.bind(actions));
+	},
 	saveQuest: function(text) {
 		text = text.trim();
 		if (text === '') return;

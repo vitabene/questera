@@ -29,6 +29,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 		AvatarUrl:  defAvatarUrl,
 		Email:      email,
 		Password:   hashedPw,
+		Coords:     Coord{X: 15, Y: 15},
 	})
 	isFatal(err)
 	http.Redirect(w, r, "/", http.StatusFound)
@@ -40,7 +41,7 @@ func initiateSession(heroId bson.ObjectId, w http.ResponseWriter) error {
 	log.Printf("%s\n", conquestId)
 	c := db.C("conquests")
 	err := c.Insert(&Conquest{
-		ConquestId: conquestId,
+		ConquestId:    conquestId,
 		HeroId:        heroId,
 		ConquestBegun: time.Now().UnixNano(),
 		LastSeen:      time.Now().UnixNano(),
@@ -82,7 +83,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	hash.Write(data)
 	md := hash.Sum(nil)
 	mdStr := hex.EncodeToString(md)
-	log.Printf("%s\n", mdStr)
+	// log.Printf("%s\n", mdStr)
 	// return
 	var hero Hero
 	err := db.C("heroes").Find(bson.M{"email": email, "password": mdStr}).One(&hero)
