@@ -15,6 +15,7 @@ type Hero struct {
 	AvatarUrl  string        `json:"avatarUrl"`
 	Email      string        `json:"email"`
 	Password   string        `json:"password"`
+	MapId			 bson.ObjectId `json:"mapId"`
 }
 
 type Conquest struct {

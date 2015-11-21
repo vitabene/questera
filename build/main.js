@@ -160,15 +160,6 @@ var App = (function (_React$Component) {
 
   return App;
 })(_react2.default.Component);
-// const App = React.createClass({
-//   render() {
-//     return (
-//       <div>
-//       tats
-//       </div>
-//     );
-//   }
-// })
 
 exports.default = App;
 
@@ -486,7 +477,7 @@ var Map = (function (_React$Component) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Map).call(this));
 
     _this.state = {
-      map: _mapStore2.default.all(),
+      map: _mapStore2.default.currentMap,
       hero: _heroStore2.default.currentHero
     };
     _this.onChange = _this.onChange.bind(_this);
@@ -509,7 +500,7 @@ var Map = (function (_React$Component) {
     key: 'onChange',
     value: function onChange() {
       this.setState({
-        map: _mapStore2.default.all(),
+        map: _mapStore2.default.currentMap(),
         hero: _heroStore2.default.currentHero
       });
     }
@@ -530,7 +521,7 @@ var Map = (function (_React$Component) {
         _react2.default.createElement(
           'p',
           null,
-          this.state.map
+          JSON.stringify(this.state.map)
         )
       );
       // return (
@@ -948,6 +939,10 @@ var MapStore = module.exports = require('./store').extend({
   init: function init() {
     this.bind(constants.GOT_MAP, this.set);
   },
+  currentMap: function currentMap() {
+    console.log(this._data[0]);
+    if (this._data[0] != undefined) return this._data[0];
+  },
   updateMap: function updateMap(data) {
     this._data = data;
   }
@@ -989,6 +984,10 @@ var CHANGE_EVENT = 'CHANGE';
 var storeMethods = {
 	init: function init() {},
 	set: function set(arr) {
+		if (arr === null) {
+			console.log("data for store " + this.constructor.name + " is null");
+			return;
+		}
 		var currIds = this._data.map(function (m) {
 			return m.Id;
 		});

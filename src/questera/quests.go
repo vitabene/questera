@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strconv"
 )
-
 type Quest struct {
 	Id        bson.ObjectId `json:"id" bson:"_id,omitempty"`
 	HeroId    bson.ObjectId `json:"heroId"`
@@ -16,12 +15,9 @@ type Quest struct {
 	Name      string        `json:"name"`
 	Type      string        `json:"type"`
 }
-
-var questCollection = "quests"
-
-type QuestResource struct {
-	Data Quest `json:"data"`
-}
+const (
+	QUEST_COLL = "quests"
+)
 
 type QuestJSON struct {
 	Text, Created, Type string
@@ -38,14 +34,13 @@ func createQuestHandler(w http.ResponseWriter, r *http.Request) {
 	isFatal(err)
 	err = createQuest(q.Text, q.Type, created, heroId)
 	isFatal(err)
-	heroLoggedId := fmt.Sprintf("%d", heroId)
-	jsonQuests, err := json.Marshal(loadQuests(heroLoggedId))
+	jsonQuests, err := json.Marshal(loadQuests(heroId))
 	isFatal(err)
 	fmt.Fprint(w, string(jsonQuests))
 }
 
 func createQuest(questName, questType string, created int, heroLoggedId bson.ObjectId) error {
-	c := db.C(questCollection)
+	c := db.C(QUEST_COLL)
 	err := c.Insert(&Quest{
 		HeroId:    heroLoggedId,
 		Name:      questName,
@@ -57,9 +52,9 @@ func createQuest(questName, questType string, created int, heroLoggedId bson.Obj
 	return nil
 }
 
-func loadQuests(HeroId string) []Quest {
+func loadQuests(HeroId bson.ObjectId) []Quest {
 	var quests []Quest
-	iter := db.C(questCollection).Find(bson.M{"heroId": HeroId}).Iter()
+	iter := db.C(QUEST_COLL).Find(bson.M{"heroId": HeroId}).Iter()
 	err := iter.All(&quests)
 	isFatal(err)
 	return quests
@@ -69,8 +64,7 @@ func questHandler(w http.ResponseWriter, r *http.Request, name string) {
 	if name == "" {
 		heroId, err := heroPresent(r)
 		isFatal(err)
-		heroLoggedId := fmt.Sprintf("%d", heroId)
-		quests := loadQuests(heroLoggedId)
+		quests := loadQuests(heroId)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(quests)
 	}

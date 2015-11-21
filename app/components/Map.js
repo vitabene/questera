@@ -7,7 +7,7 @@ class Map extends React.Component {
   constructor() {
     super();
     this.state = {
-      map: MapStore.all(),
+      map: MapStore.currentMap,
       hero: HeroStore.currentHero
     };
     this.onChange = this.onChange.bind(this)
@@ -22,7 +22,7 @@ class Map extends React.Component {
   }
   onChange() {
     this.setState({
-      map: MapStore.all(),
+      map: MapStore.currentMap(),
       hero: HeroStore.currentHero
     });
   }
@@ -37,7 +37,7 @@ class Map extends React.Component {
     // });
     return (
       <div className="map" id="map">
-        <p>{this.state.map }</p>
+        <p>{JSON.stringify(this.state.map)}</p>
       </div>
     );
     // return (

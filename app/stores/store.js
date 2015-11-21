@@ -6,6 +6,10 @@ import Dispatcher from '../dispatcher'
 var storeMethods = {
 	init: function() {},
 	set: function(arr) {
+		if (arr === null) {
+			console.log("data for store " + this.constructor.name + " is null");
+			return
+		}
 		var currIds = this._data.map(function(m) {
 			return m.Id;
 		});

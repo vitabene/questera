@@ -10,13 +10,5 @@ class App extends React.Component {
     );
   }
 }
-// const App = React.createClass({
-//   render() {
-//     return (
-//       <div>
-//       tats
-//       </div>
-//     );
-//   }
-// })
+
 export default App
