@@ -135,6 +135,11 @@ $tile-size: 23px;
   width: $tile-size;
   height: $tile-size;
   float: left;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.terrain-layer, .object-layer {
+  position: absolute;
 }
 .map-row {
   width: 100%;

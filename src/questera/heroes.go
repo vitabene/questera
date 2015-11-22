@@ -12,7 +12,7 @@ type Hero struct {
 	Id         bson.ObjectId `json:"id" bson:"_id,omitempty"`
 	Occupation int           `json:"occupation"`
 	Name       string        `json:"name"`
-	AvatarUrl  string        `json:"avatarUrl" bson:"avatarurl"`
+	AvatarUrl  string        `json:"avatarUrl" bson:"avatarUrl"`
 	Email      string        `json:"email"`
 	Password   string        `json:"password"`
 	MapId      bson.ObjectId `json:"mapId"`

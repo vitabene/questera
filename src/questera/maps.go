@@ -9,8 +9,8 @@ import (
 )
 
 type Coord struct {
-	X int `json:x`
-	Y int `json:y`
+	X int `json:"x"`
+	Y int `json:"y"`
 }
 type Map struct {
 	Id     bson.ObjectId `json:"id" bson:"_id,omitempty"`
@@ -21,10 +21,11 @@ type MapObject struct {
 	Id      bson.ObjectId `json:"id" bson:"_id,omitempty"`
 	HeroId  bson.ObjectId `json:"heroId" bson:"heroId"`
 	MapId   bson.ObjectId `json:"mapId" bson:"mapId"`
-	Type    int           `json:type`
+	Type    int           `json:"type"`
 	Visited bool          `json:"visited"`
 	Coords  Coord         `json:"coords"`
 }
+
 // { "heroId" : ObjectId("564c476e4928fd9189b05e01"),
 // "mapId": ObjectId("565063fcd188e0caf423e66a"), "type": 0,
 // "visited": false, "coords": {"x": 10,"y":10}}
