@@ -13,7 +13,8 @@ class Home extends React.Component {
       quests: QuestStore.all(),
       hero: HeroStore.getHero()
     };
-    this.onChange = this.onChange.bind(this)
+    this.onChange = this.onChange.bind(this);
+    this.moveHero = this.moveHero.bind(this);
   }
   saveQuest(text) {
       actions.createQuest(text);
@@ -32,11 +33,18 @@ class Home extends React.Component {
       hero: HeroStore.getHero()
     });
   }
+  moveHero(coords) {
+    this.state.hero.coords.x += coords.x
+    this.state.hero.coords.y += coords.y
+    this.setState({
+      hero: this.state.hero
+    });
+  }
   render () {
     return (
       <div>
         <HeroBoard hero={this.state.hero}/>
-        <Map hero={this.state.hero}/>
+        <Map moveHero={this.moveHero} hero={this.state.hero}/>
         <QuestBoard addQuest={this.saveQuest} quests={this.state.quests}/>
       </div>
     );

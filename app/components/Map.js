@@ -26,7 +26,7 @@ class Map extends React.Component {
     return (
       <div className="map" id="map">
         <MapTerrainLayer map={this.state.map}/>
-        <MapObjectLayer map={this.state.map} hero={this.props.hero}/>
+        <MapObjectLayer map={this.state.map} moveHero={this.props.moveHero} hero={this.props.hero}/>
       </div>
     );
   }

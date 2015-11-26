@@ -9,12 +9,8 @@ class MapObjectLayer extends React.Component {
     this.state = {
       objects: MapObjectStore.all()
     };
-    this.onChange = this.onChange.bind(this)
-  }
-  handleKeypress(e) {
-    console.log(e.keyCode);
-    // if(e.keyCode == 13){
-    // }
+    this.onChange = this.onChange.bind(this);
+    this.handleKeypress = this.handleKeypress.bind(this);
   }
   componentDidMount() {
     MapObjectStore.addChangeListener(this.onChange);
@@ -29,7 +25,26 @@ class MapObjectLayer extends React.Component {
       objects: MapObjectStore.all()
     });
   }
-
+  handleKeypress(e) {
+    if (this.props != undefined && this.props.moveHero != undefined) {
+      switch (e.keyCode) {
+        case 37:
+          this.props.moveHero({x: -1, y: 0});
+          break;
+        case 38:
+          this.props.moveHero({x: 0, y: -1});
+          break;
+        case 39:
+          this.props.moveHero({x: 1, y: 0});
+          break;
+        case 40:
+          this.props.moveHero({x: 0, y: 1});
+          break;
+        default:
+          break;
+      }
+    }
+  }
   render () {
     var grid = [], objectGridArr = [];
     if (this.state.objects != undefined) {
