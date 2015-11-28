@@ -21,7 +21,8 @@ const API = {
 		post('/api/quests/create', {
 			Text: text,
 			Type: "Monster",
-			Created: String(new Date().getTime())
+			Created: String(new Date().getTime()),
+			Coords: {x: getRandomInt(0, 32), y:getRandomInt(0, 32)}
 		}).then(actions.createdQuest.bind(actions));
 	},
 	startFetchingQuests: function(){
@@ -43,6 +44,10 @@ Dispatcher.register(function(action){
 		// 		break;
 	}
 });
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
 
 function get(url) {
 	return fetch(url, {

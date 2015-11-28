@@ -14,6 +14,7 @@ type Quest struct {
 	Completed int           `json:"completed"`
 	Name      string        `json:"name"`
 	Type      string        `json:"type"`
+	Coords    Coord         `json:"coords"`
 }
 
 const (

@@ -1,7 +1,7 @@
 import MapObjectRow from './MapObjectRow'
 import React, { PropTypes } from 'react'
-import MapObjectStore from '../stores/mapObjectStore'
-import HeroStore from '../stores/heroStore'
+import MapObjectStore from '../../stores/mapObjectStore'
+import HeroStore from '../../stores/heroStore'
 
 class MapObjectLayer extends React.Component {
   constructor() {
@@ -51,6 +51,14 @@ class MapObjectLayer extends React.Component {
       this.state.objects.forEach(function(obj, i) {
         objectGridArr[obj.coords.y] = [];
         objectGridArr[obj.coords.y][obj.coords.x] = obj;
+      });
+    }
+    if (this.props.quests != undefined) {
+      this.props.quests.forEach(function(quest, i) {
+        objectGridArr[quest.coords.y] = [];
+        var objectsPresent = objectGridArr[quest.coords.y][quest.coords.x];
+        // if ()
+        objectGridArr[quest.coords.y][quest.coords.x] = quest;
       });
     }
     var hero = this.props.hero;

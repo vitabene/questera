@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import MapTerrainLayer from './MapTerrainLayer'
 import MapObjectLayer from './MapObjectLayer'
-import MapStore from '../stores/mapStore'
+import MapStore from '../../stores/mapStore'
 
 class Map extends React.Component {
   constructor() {
@@ -26,7 +26,10 @@ class Map extends React.Component {
     return (
       <div className="map" id="map">
         <MapTerrainLayer map={this.state.map}/>
-        <MapObjectLayer map={this.state.map} moveHero={this.props.moveHero} hero={this.props.hero}/>
+        <MapObjectLayer map={this.state.map}
+                        moveHero={this.props.moveHero}
+                        quests={this.props.quests}
+                        hero={this.props.hero}/>
       </div>
     );
   }

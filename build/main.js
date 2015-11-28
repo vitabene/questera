@@ -71,7 +71,8 @@ var API = {
 		post('/api/quests/create', {
 			Text: text,
 			Type: "Monster",
-			Created: String(new Date().getTime())
+			Created: String(new Date().getTime()),
+			Coords: { x: getRandomInt(0, 32), y: getRandomInt(0, 32) }
 		}).then(_actions2.default.createdQuest.bind(_actions2.default));
 	},
 	startFetchingQuests: function startFetchingQuests() {
@@ -93,6 +94,10 @@ _dispatcher2.default.register(function (action) {
 		// 		break;
 	}
 });
+
+function getRandomInt(min, max) {
+	return Math.floor(Math.random() * (max - min)) + min;
+}
 
 function get(url) {
 	return fetch(url, {
@@ -299,7 +304,7 @@ var _HeroBoard = require('./HeroBoard');
 
 var _HeroBoard2 = _interopRequireDefault(_HeroBoard);
 
-var _Map = require('./Map');
+var _Map = require('./map/Map');
 
 var _Map2 = _interopRequireDefault(_Map);
 
@@ -364,7 +369,6 @@ var Home = (function (_React$Component) {
   }, {
     key: 'moveHero',
     value: function moveHero(coords) {
-      console.log(coords);
       this.state.hero.coords.x += coords.x;
       this.state.hero.coords.y += coords.y;
       this.setState({
@@ -378,7 +382,7 @@ var Home = (function (_React$Component) {
         'div',
         null,
         _react2.default.createElement(_HeroBoard2.default, { hero: this.state.hero }),
-        _react2.default.createElement(_Map2.default, { moveHero: this.moveHero, hero: this.state.hero }),
+        _react2.default.createElement(_Map2.default, { moveHero: this.moveHero, hero: this.state.hero, quests: this.state.quests }),
         _react2.default.createElement(_QuestBoard2.default, { addQuest: this.saveQuest, quests: this.state.quests })
       );
     }
@@ -389,7 +393,7 @@ var Home = (function (_React$Component) {
 
 exports.default = Home;
 
-},{"../actions":1,"../stores/heroStore":22,"../stores/questStore":25,"./HeroBoard":5,"./Map":8,"./QuestBoard":17,"react":239}],7:[function(require,module,exports){
+},{"../actions":1,"../stores/heroStore":22,"../stores/questStore":25,"./HeroBoard":5,"./QuestBoard":9,"./map/Map":11,"react":239}],7:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -462,6 +466,242 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var questTypes = ['Monster'];
+
+var Quest = (function (_React$Component) {
+  _inherits(Quest, _React$Component);
+
+  function Quest() {
+    _classCallCheck(this, Quest);
+
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Quest).call(this));
+
+    _this.state = {
+      edited: false
+    };
+    _this.complete = _this.complete.bind(_this);
+    _this.edit = _this.edit.bind(_this);
+    _this.cancelEdit = _this.cancelEdit.bind(_this);
+    _this.completeEdit = _this.completeEdit.bind(_this);
+    return _this;
+  }
+
+  _createClass(Quest, [{
+    key: 'edit',
+    value: function edit() {
+      this.setState({
+        edited: true
+      });
+    }
+  }, {
+    key: 'complete',
+    value: function complete() {
+      console.log("complete");
+    }
+  }, {
+    key: 'cancelEdit',
+    value: function cancelEdit() {
+      this.setState({
+        edited: false
+      });
+    }
+  }, {
+    key: 'completeEdit',
+    value: function completeEdit() {
+      console.log("completeEdit");
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var contentEditable = "";
+      var buttons = _react2.default.createElement(
+        'div',
+        { className: 'quest__buttons' },
+        _react2.default.createElement('img', { className: 'quest__edit-button',
+          src: "./build/assets/quill-s.png",
+          onClick: this.edit })
+      );
+      if (this.state.edited) {
+        contentEditable = "contenteditable";
+        buttons = _react2.default.createElement(
+          'div',
+          { className: 'quest__buttons' },
+          _react2.default.createElement('img', { className: 'quest__cancel-edit-button',
+            src: "./build/assets/quill-s-cancel.png",
+            onClick: this.cancelEdit }),
+          _react2.default.createElement('img', { className: 'quest__complete-edit-button',
+            src: "./build/assets/quill-s-complete.png",
+            onClick: this.completeEdit })
+        );
+      }
+      return _react2.default.createElement(
+        'div',
+        { className: 'quest' },
+        _react2.default.createElement('img', { className: 'quest__image image', src: "./build/assets/" + this.props.quest.type.toLowerCase() + ".png" }),
+        _react2.default.createElement(
+          'span',
+          { className: 'quest__name', contenteditable: this.state.edited },
+          this.props.quest.name
+        ),
+        buttons
+      );
+    }
+  }]);
+
+  return Quest;
+})(_react2.default.Component);
+
+exports.default = Quest;
+
+},{"react":239}],9:[function(require,module,exports){
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _QuestField = require('./QuestField');
+
+var _QuestField2 = _interopRequireDefault(_QuestField);
+
+var _Quest = require('./Quest');
+
+var _Quest2 = _interopRequireDefault(_Quest);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var QuestBoard = (function (_React$Component) {
+  _inherits(QuestBoard, _React$Component);
+
+  function QuestBoard() {
+    _classCallCheck(this, QuestBoard);
+
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(QuestBoard).apply(this, arguments));
+  }
+
+  _createClass(QuestBoard, [{
+    key: 'render',
+    value: function render() {
+      var quests = [];
+      for (var i = this.props.quests.length - 1; i >= 0; i--) {
+        quests.push(_react2.default.createElement(_Quest2.default, { quest: this.props.quests[i], key: this.props.quests[i].created }));
+      };
+      return _react2.default.createElement(
+        'div',
+        { className: 'questboard', id: 'questboard' },
+        _react2.default.createElement(_QuestField2.default, { addQuest: this.props.addQuest }),
+        quests
+      );
+    }
+  }]);
+
+  return QuestBoard;
+})(_react2.default.Component);
+
+exports.default = QuestBoard;
+
+},{"./Quest":8,"./QuestField":10,"react":239}],10:[function(require,module,exports){
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var QuestField = (function (_React$Component) {
+  _inherits(QuestField, _React$Component);
+
+  function QuestField() {
+    _classCallCheck(this, QuestField);
+
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(QuestField).call(this));
+
+    _this.state = {
+      value: ''
+    };
+    _this.handleChange = _this.handleChange.bind(_this);
+    _this.handleClick = _this.handleClick.bind(_this);
+    return _this;
+  }
+
+  _createClass(QuestField, [{
+    key: 'handleClick',
+    value: function handleClick(e) {
+      this.props.addQuest(this.state.value);
+      this.setState({
+        value: ''
+      });
+    }
+  }, {
+    key: 'handleChange',
+    value: function handleChange(e) {
+      this.setState({
+        value: e.target.value
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { className: 'quest-field-box' },
+        _react2.default.createElement('input', { className: 'quest-field', placeholder: 'What have you got to do?', value: this.state.value, onChange: this.handleChange, id: 'questField' }),
+        _react2.default.createElement('button', { className: 'questSubmitButton', onClick: this.handleClick })
+      );
+    }
+  }]);
+
+  return QuestField;
+})(_react2.default.Component);
+
+exports.default = QuestField;
+
+},{"react":239}],11:[function(require,module,exports){
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
 var _MapTerrainLayer = require('./MapTerrainLayer');
 
 var _MapTerrainLayer2 = _interopRequireDefault(_MapTerrainLayer);
@@ -470,7 +710,7 @@ var _MapObjectLayer = require('./MapObjectLayer');
 
 var _MapObjectLayer2 = _interopRequireDefault(_MapObjectLayer);
 
-var _mapStore = require('../stores/mapStore');
+var _mapStore = require('../../stores/mapStore');
 
 var _mapStore2 = _interopRequireDefault(_mapStore);
 
@@ -521,7 +761,10 @@ var Map = (function (_React$Component) {
         'div',
         { className: 'map', id: 'map' },
         _react2.default.createElement(_MapTerrainLayer2.default, { map: this.state.map }),
-        _react2.default.createElement(_MapObjectLayer2.default, { map: this.state.map, moveHero: this.props.moveHero, hero: this.props.hero })
+        _react2.default.createElement(_MapObjectLayer2.default, { map: this.state.map,
+          moveHero: this.props.moveHero,
+          quests: this.props.quests,
+          hero: this.props.hero })
       );
     }
   }]);
@@ -531,7 +774,7 @@ var Map = (function (_React$Component) {
 
 exports.default = Map;
 
-},{"../stores/mapStore":24,"./MapObjectLayer":10,"./MapTerrainLayer":13,"react":239}],9:[function(require,module,exports){
+},{"../../stores/mapStore":24,"./MapObjectLayer":13,"./MapTerrainLayer":16,"react":239}],12:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -585,7 +828,7 @@ var MapObject = (function (_React$Component) {
 
 exports.default = MapObject;
 
-},{"react":239}],10:[function(require,module,exports){
+},{"react":239}],13:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -602,11 +845,11 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _mapObjectStore = require('../stores/mapObjectStore');
+var _mapObjectStore = require('../../stores/mapObjectStore');
 
 var _mapObjectStore2 = _interopRequireDefault(_mapObjectStore);
 
-var _heroStore = require('../stores/heroStore');
+var _heroStore = require('../../stores/heroStore');
 
 var _heroStore2 = _interopRequireDefault(_heroStore);
 
@@ -686,6 +929,14 @@ var MapObjectLayer = (function (_React$Component) {
           objectGridArr[obj.coords.y][obj.coords.x] = obj;
         });
       }
+      if (this.props.quests != undefined) {
+        this.props.quests.forEach(function (quest, i) {
+          objectGridArr[quest.coords.y] = [];
+          var objectsPresent = objectGridArr[quest.coords.y][quest.coords.x];
+          // if ()
+          objectGridArr[quest.coords.y][quest.coords.x] = quest;
+        });
+      }
       var hero = this.props.hero;
       if (hero != undefined && hero.coords != undefined) {
         objectGridArr[hero.coords.y] = [];
@@ -710,7 +961,7 @@ var MapObjectLayer = (function (_React$Component) {
 
 exports.default = MapObjectLayer;
 
-},{"../stores/heroStore":22,"../stores/mapObjectStore":23,"./MapObjectRow":11,"react":239}],11:[function(require,module,exports){
+},{"../../stores/heroStore":22,"../../stores/mapObjectStore":23,"./MapObjectRow":14,"react":239}],14:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -767,7 +1018,7 @@ var MapObjectRow = (function (_React$Component) {
 
 exports.default = MapObjectRow;
 
-},{"./MapObjectTile":12,"react":239}],12:[function(require,module,exports){
+},{"./MapObjectTile":15,"react":239}],15:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -822,7 +1073,7 @@ var MapObjectTile = (function (_React$Component) {
 
 exports.default = MapObjectTile;
 
-},{"./MapObject":9,"react":239}],13:[function(require,module,exports){
+},{"./MapObject":12,"react":239}],16:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -878,7 +1129,7 @@ var MapTerrainLayer = (function (_React$Component) {
 
 exports.default = MapTerrainLayer;
 
-},{"./MapTerrainRow":14,"react":239}],14:[function(require,module,exports){
+},{"./MapTerrainRow":17,"react":239}],17:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -932,7 +1183,7 @@ var MapTerrainRow = (function (_React$Component) {
 
 exports.default = MapTerrainRow;
 
-},{"./MapTerrainTile":15,"react":239}],15:[function(require,module,exports){
+},{"./MapTerrainTile":18,"react":239}],18:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -981,187 +1232,6 @@ var MapTerrainTile = (function (_React$Component) {
 })(_react2.default.Component);
 
 exports.default = MapTerrainTile;
-
-},{"react":239}],16:[function(require,module,exports){
-'use strict';
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var questTypes = ['Monster'];
-
-var Quest = (function (_React$Component) {
-  _inherits(Quest, _React$Component);
-
-  function Quest() {
-    _classCallCheck(this, Quest);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(Quest).apply(this, arguments));
-  }
-
-  _createClass(Quest, [{
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        { className: 'quest' },
-        _react2.default.createElement('img', { className: 'quest__image image', src: "./build/assets/" + this.props.quest.type.toLowerCase() + ".png" }),
-        _react2.default.createElement(
-          'span',
-          { className: 'quest__name' },
-          this.props.quest.name
-        )
-      );
-    }
-  }]);
-
-  return Quest;
-})(_react2.default.Component);
-
-exports.default = Quest;
-
-},{"react":239}],17:[function(require,module,exports){
-'use strict';
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _QuestField = require('./QuestField');
-
-var _QuestField2 = _interopRequireDefault(_QuestField);
-
-var _Quest = require('./Quest');
-
-var _Quest2 = _interopRequireDefault(_Quest);
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var QuestBoard = (function (_React$Component) {
-  _inherits(QuestBoard, _React$Component);
-
-  function QuestBoard() {
-    _classCallCheck(this, QuestBoard);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(QuestBoard).apply(this, arguments));
-  }
-
-  _createClass(QuestBoard, [{
-    key: 'render',
-    value: function render() {
-      var quests = [];
-      for (var i = this.props.quests.length - 1; i >= 0; i--) {
-        quests.push(_react2.default.createElement(_Quest2.default, { quest: this.props.quests[i], key: this.props.quests[i].created }));
-      };
-      return _react2.default.createElement(
-        'div',
-        { className: 'questboard', id: 'questboard' },
-        _react2.default.createElement(_QuestField2.default, { addQuest: this.props.addQuest }),
-        quests
-      );
-    }
-  }]);
-
-  return QuestBoard;
-})(_react2.default.Component);
-
-exports.default = QuestBoard;
-
-},{"./Quest":16,"./QuestField":18,"react":239}],18:[function(require,module,exports){
-'use strict';
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var QuestField = (function (_React$Component) {
-  _inherits(QuestField, _React$Component);
-
-  function QuestField() {
-    _classCallCheck(this, QuestField);
-
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(QuestField).call(this));
-
-    _this.state = {
-      value: ''
-    };
-    _this.handleChange = _this.handleChange.bind(_this);
-    _this.handleClick = _this.handleClick.bind(_this);
-    return _this;
-  }
-
-  _createClass(QuestField, [{
-    key: 'handleClick',
-    value: function handleClick(e) {
-      this.props.addQuest(this.state.value);
-      this.setState({
-        value: ''
-      });
-    }
-  }, {
-    key: 'handleChange',
-    value: function handleChange(e) {
-      this.setState({
-        value: e.target.value
-      });
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        { className: 'quest-field-box' },
-        _react2.default.createElement('input', { className: 'quest-field', placeholder: 'What have you got to do?', value: this.state.value, onChange: this.handleChange, id: 'questField' }),
-        _react2.default.createElement('button', { className: 'questSubmitButton', onClick: this.handleClick })
-      );
-    }
-  }]);
-
-  return QuestField;
-})(_react2.default.Component);
-
-exports.default = QuestField;
 
 },{"react":239}],19:[function(require,module,exports){
 'use strict';

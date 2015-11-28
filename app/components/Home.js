@@ -2,7 +2,7 @@ import actions from '../actions'
 import QuestStore from '../stores/questStore'
 import HeroStore from '../stores/heroStore'
 import HeroBoard from './HeroBoard'
-import Map from './Map'
+import Map from './map/Map'
 import QuestBoard from './QuestBoard'
 import React, { PropTypes } from 'react'
 
@@ -44,7 +44,7 @@ class Home extends React.Component {
     return (
       <div>
         <HeroBoard hero={this.state.hero}/>
-        <Map moveHero={this.moveHero} hero={this.state.hero}/>
+        <Map moveHero={this.moveHero} hero={this.state.hero} quests={this.state.quests}/>
         <QuestBoard addQuest={this.saveQuest} quests={this.state.quests}/>
       </div>
     );
