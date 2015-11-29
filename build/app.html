@@ -3,14 +3,20 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Questera</title>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<link rel="stylesheet" href="./build/css/style.css" media="screen" charset="utf-8">
 	<link rel="icon" href="./build/assets/favicon.png">
 </head>
 <body>
 	<div id="app"></div>
 	<script type="text/javascript">
+		const TERRAINS = {
+		  0: "ocean", 1: "grass", 2: "forest",
+		  3: "mountains", 4: "field", 5: "moor",
+		  6: "pond", 7: "road", 8: "river",
+		};
+		const OBJECTS = {
+		  0: "camp"
+		};
 		var HERO = JSON.parse({{.Hero}})
 	</script>
 	<script src="./build/main.js"></script>

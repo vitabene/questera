@@ -17,7 +17,7 @@ type Page struct {
 var (
 	templates     = template.Must(template.ParseFiles("views/index.html", "views/app.html"))
 	staticRoutes  = []string{"/login", "/logout", "/about"}
-	dynamicRoutes = regexp.MustCompile("^/api/(hero|quests|objects|map)/?(create|start|complete)?/?([0-9]+)?$")
+	dynamicRoutes = regexp.MustCompile("^/api/(hero|quests|objects|map)/?(create|start|complete|update)?/?([0-9]+)?$")
 	db            *mgo.Database
 	session       *mgo.Session
 )
@@ -86,6 +86,7 @@ func main() {
 	http.HandleFunc("/api/quests/", makeHandler(questHandler))
 	http.HandleFunc("/api/objects/", makeHandler(mapObjectHandler))
 	http.HandleFunc("/api/quests/create", createQuestHandler)
+	http.HandleFunc("/api/quests/update", updateQuestHandler)
 	http.HandleFunc("/api/map/", makeHandler(mapHandler))
 	http.HandleFunc("/signup", signupHandler)
 	http.HandleFunc("/login", loginHandler)

@@ -6,31 +6,45 @@ class Quest extends React.Component {
   constructor() {
     super();
     this.state = {
-      edited: false
+      edited: false,
+      value: '',
+      id: ''
     };
+    this.updateValue = this.updateValue.bind(this);
+    this.handleChange = this.handleChange.bind(this);
     this.complete = this.complete.bind(this);
     this.edit = this.edit.bind(this);
     this.cancelEdit = this.cancelEdit.bind(this);
     this.completeEdit = this.completeEdit.bind(this);
   }
   edit() {
-    this.setState({
-      edited: true
-    });
+    this.setState({edited: true});
+  }
+  handleChange(e){
+    this.setState({value: e.target.value});
+  }
+  updateValue(text){
+    this.setState({value: text});
   }
   complete() {
-    console.log("complete");
+    this.props.update(this.state.id, this.state.value, 1);
   }
   cancelEdit() {
+    this.setState({edited: false});
+  }
+  completeEdit() {
+    this.props.update(this.state.id, this.state.value, 0)
     this.setState({
       edited: false
     });
   }
-  completeEdit() {
-    console.log("completeEdit");
+  componentDidMount() {
+    this.setState({
+      id: this.props.quest ? this.props.quest.id : '',
+      value: this.props.quest ? this.props.quest.name : ''
+    });
   }
   render () {
-    var contentEditable = "";
     var buttons = (
       <div className="quest__buttons">
         <img className="quest__edit-button"
@@ -39,7 +53,6 @@ class Quest extends React.Component {
       </div>
     );
     if (this.state.edited) {
-      contentEditable = "contenteditable";
       buttons = (
         <div className="quest__buttons">
           <img className="quest__cancel-edit-button"
@@ -47,14 +60,19 @@ class Quest extends React.Component {
                 onClick={this.cancelEdit}/>
           <img className="quest__complete-edit-button"
                 src={"./build/assets/quill-s-complete.png"}
-                onClick={this.completeEdit}/>
+                onClick={this.completeEdit} />
         </div>
       );
     }
     return (
       <div className="quest">
-        <img className="quest__image image" src={"./build/assets/" + this.props.quest.type.toLowerCase() + ".png"} />
-        <span className="quest__name" contenteditable={this.state.edited}>{this.props.quest.name}</span>
+        <img className="quest__image image"
+              src={"./build/assets/monster.png"}
+              onClick={this.complete}/>
+        <input className="quest__name"
+              disabled={!this.state.edited}
+              onChange={this.handleChange}
+              value={this.state.value}/>
         {buttons}
       </div>
     );

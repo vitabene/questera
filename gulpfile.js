@@ -3,14 +3,6 @@ var gulp = require('gulp'),
 		sass = require('gulp-ruby-sass'),
 		browserSync = require('browser-sync').create();
 
-// gulp.task('sass', function () {
-//   gulp.src('styles/*.scss')
-// 		.pipe(sourcemaps.init())
-//     .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
-// 		.pipe(sourcemaps.write())
-//     .pipe(gulp.dest('build/css'))
-// 		.pipe(browserSync.stream());
-// });
 gulp.task('sass', function () {
   return sass('styles/*.scss', { sourcemap: true })
     .on('error', sass.logError)
@@ -19,7 +11,8 @@ gulp.task('sass', function () {
       includeContent: false,
       sourceRoot: 'source'
     }))
-    .pipe(gulp.dest('build/css'));
+    .pipe(gulp.dest('build/css'))
+		.pipe(browserSync.stream({match: '**/*.css'}));
 });
 
 gulp.task('default', ['browser-sync', 'watch']);

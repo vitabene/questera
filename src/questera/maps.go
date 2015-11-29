@@ -54,7 +54,7 @@ func mapObjectHandler(w http.ResponseWriter, r *http.Request, name string) {
 	query := bson.M{"heroId": HeroId, "mapId": bson.ObjectIdHex(DEF_MAP_ID)}
 	err = db.C(MAP_OBJECT_COLL).Find(query).All(&objects)
 	isFatal(err)
-	log.Printf("mapObjects: %v\n", objects)
+	// log.Printf("mapObjects: %v\n", objects)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(objects)
 }

@@ -23,7 +23,7 @@ class QuestField extends React.Component {
   render () {
     return (
       <div className="quest-field-box">
-        <input className="quest-field" placeholder='What have you got to do?' value={this.state.value} onChange={this.handleChange} id="questField"/>
+        <input className="quest-field" placeholder='What is your quest?' value={this.state.value} onChange={this.handleChange} id="questField"/>
         <button className="questSubmitButton" onClick={this.handleClick}></button>
       </div>
     );

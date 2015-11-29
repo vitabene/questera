@@ -10,7 +10,7 @@ class Home extends React.Component {
   constructor() {
     super();
     this.state = {
-      quests: QuestStore.all(),
+      quests: QuestStore.allIncomplete(),
       hero: HeroStore.getHero()
     };
     this.onChange = this.onChange.bind(this);
@@ -18,6 +18,9 @@ class Home extends React.Component {
   }
   saveQuest(text) {
       actions.createQuest(text);
+  }
+  updateQuest(id, text, completed) {
+      actions.updateQuest({id: id, text: text, completed: completed});
   }
   componentDidMount() {
     QuestStore.addChangeListener(this.onChange);
@@ -29,7 +32,7 @@ class Home extends React.Component {
   }
   onChange() {
     this.setState({
-      quests: QuestStore.all(),
+      quests: QuestStore.allIncomplete(),
       hero: HeroStore.getHero()
     });
   }
@@ -44,8 +47,12 @@ class Home extends React.Component {
     return (
       <div>
         <HeroBoard hero={this.state.hero}/>
-        <Map moveHero={this.moveHero} hero={this.state.hero} quests={this.state.quests}/>
-        <QuestBoard addQuest={this.saveQuest} quests={this.state.quests}/>
+        <Map moveHero={this.moveHero}
+              hero={this.state.hero}
+              quests={this.state.quests}/>
+        <QuestBoard addQuest={this.saveQuest}
+                    updateQuest={this.updateQuest}
+                    quests={this.state.quests}/>
       </div>
     );
   }

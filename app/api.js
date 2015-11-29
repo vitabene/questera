@@ -15,10 +15,23 @@ const API = {
 	fetchObjects: function() {
 		get('/api/objects').then(actions.gotMapObjects.bind(actions));
 	},
+	updateQuest(data) {
+		data.id = data.id.trim();
+		if (data.id === '') return;
+		post('/api/quests/update', {
+			Id: data.id,
+			Text: data.text,
+			Type: "",
+			Created: "",
+			Coords: {x:0, y:0},
+			Completed: data.completed
+		}).then(actions.updatedQuest.bind(actions));
+	},
 	saveQuest: function(text) {
 		text = text.trim();
 		if (text === '') return;
 		post('/api/quests/create', {
+			Id: "",
 			Text: text,
 			Type: "Monster",
 			Created: String(new Date().getTime()),
@@ -39,9 +52,9 @@ Dispatcher.register(function(action){
 				API.saveQuest(action.data);
 				break;
 			break;
-		// case constants.FOLLOW:
-		// 		API.follow(action.data);
-		// 		break;
+		case constants.UPDATE_QUEST:
+				API.updateQuest(action.data);
+				break;
 	}
 });
 

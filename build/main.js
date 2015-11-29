@@ -65,10 +65,24 @@ var API = {
 	fetchObjects: function fetchObjects() {
 		get('/api/objects').then(_actions2.default.gotMapObjects.bind(_actions2.default));
 	},
+	updateQuest: function updateQuest(data) {
+		data.id = data.id.trim();
+		if (data.id === '') return;
+		post('/api/quests/update', {
+			Id: data.id,
+			Text: data.text,
+			Type: "",
+			Created: "",
+			Coords: { x: 0, y: 0 },
+			Completed: data.completed
+		}).then(_actions2.default.updatedQuest.bind(_actions2.default));
+	},
+
 	saveQuest: function saveQuest(text) {
 		text = text.trim();
 		if (text === '') return;
 		post('/api/quests/create', {
+			Id: "",
 			Text: text,
 			Type: "Monster",
 			Created: String(new Date().getTime()),
@@ -89,9 +103,9 @@ _dispatcher2.default.register(function (action) {
 			API.saveQuest(action.data);
 			break;
 			break;
-		// case constants.FOLLOW:
-		// 		API.follow(action.data);
-		// 		break;
+		case _constants2.default.UPDATE_QUEST:
+			API.updateQuest(action.data);
+			break;
 	}
 });
 
@@ -333,7 +347,7 @@ var Home = (function (_React$Component) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Home).call(this));
 
     _this.state = {
-      quests: _questStore2.default.all(),
+      quests: _questStore2.default.allIncomplete(),
       hero: _heroStore2.default.getHero()
     };
     _this.onChange = _this.onChange.bind(_this);
@@ -345,6 +359,11 @@ var Home = (function (_React$Component) {
     key: 'saveQuest',
     value: function saveQuest(text) {
       _actions2.default.createQuest(text);
+    }
+  }, {
+    key: 'updateQuest',
+    value: function updateQuest(id, text, completed) {
+      _actions2.default.updateQuest({ id: id, text: text, completed: completed });
     }
   }, {
     key: 'componentDidMount',
@@ -362,7 +381,7 @@ var Home = (function (_React$Component) {
     key: 'onChange',
     value: function onChange() {
       this.setState({
-        quests: _questStore2.default.all(),
+        quests: _questStore2.default.allIncomplete(),
         hero: _heroStore2.default.getHero()
       });
     }
@@ -382,8 +401,12 @@ var Home = (function (_React$Component) {
         'div',
         null,
         _react2.default.createElement(_HeroBoard2.default, { hero: this.state.hero }),
-        _react2.default.createElement(_Map2.default, { moveHero: this.moveHero, hero: this.state.hero, quests: this.state.quests }),
-        _react2.default.createElement(_QuestBoard2.default, { addQuest: this.saveQuest, quests: this.state.quests })
+        _react2.default.createElement(_Map2.default, { moveHero: this.moveHero,
+          hero: this.state.hero,
+          quests: this.state.quests }),
+        _react2.default.createElement(_QuestBoard2.default, { addQuest: this.saveQuest,
+          updateQuest: this.updateQuest,
+          quests: this.state.quests })
       );
     }
   }]);
@@ -485,8 +508,12 @@ var Quest = (function (_React$Component) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Quest).call(this));
 
     _this.state = {
-      edited: false
+      edited: false,
+      value: '',
+      id: ''
     };
+    _this.updateValue = _this.updateValue.bind(_this);
+    _this.handleChange = _this.handleChange.bind(_this);
     _this.complete = _this.complete.bind(_this);
     _this.edit = _this.edit.bind(_this);
     _this.cancelEdit = _this.cancelEdit.bind(_this);
@@ -497,31 +524,47 @@ var Quest = (function (_React$Component) {
   _createClass(Quest, [{
     key: 'edit',
     value: function edit() {
-      this.setState({
-        edited: true
-      });
+      this.setState({ edited: true });
+    }
+  }, {
+    key: 'handleChange',
+    value: function handleChange(e) {
+      this.setState({ value: e.target.value });
+    }
+  }, {
+    key: 'updateValue',
+    value: function updateValue(text) {
+      this.setState({ value: text });
     }
   }, {
     key: 'complete',
     value: function complete() {
-      console.log("complete");
+      this.props.update(this.state.id, this.state.value, 1);
     }
   }, {
     key: 'cancelEdit',
     value: function cancelEdit() {
+      this.setState({ edited: false });
+    }
+  }, {
+    key: 'completeEdit',
+    value: function completeEdit() {
+      this.props.update(this.state.id, this.state.value, 0);
       this.setState({
         edited: false
       });
     }
   }, {
-    key: 'completeEdit',
-    value: function completeEdit() {
-      console.log("completeEdit");
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.setState({
+        id: this.props.quest ? this.props.quest.id : ''
+      });
     }
   }, {
     key: 'render',
     value: function render() {
-      var contentEditable = "";
+      var questName = this.state.value == "" ? this.props.quest.name : this.state.value;
       var buttons = _react2.default.createElement(
         'div',
         { className: 'quest__buttons' },
@@ -530,7 +573,6 @@ var Quest = (function (_React$Component) {
           onClick: this.edit })
       );
       if (this.state.edited) {
-        contentEditable = "contenteditable";
         buttons = _react2.default.createElement(
           'div',
           { className: 'quest__buttons' },
@@ -545,12 +587,13 @@ var Quest = (function (_React$Component) {
       return _react2.default.createElement(
         'div',
         { className: 'quest' },
-        _react2.default.createElement('img', { className: 'quest__image image', src: "./build/assets/" + this.props.quest.type.toLowerCase() + ".png" }),
-        _react2.default.createElement(
-          'span',
-          { className: 'quest__name', contenteditable: this.state.edited },
-          this.props.quest.name
-        ),
+        _react2.default.createElement('img', { className: 'quest__image image',
+          src: "./build/assets/monster.png",
+          onClick: this.complete }),
+        _react2.default.createElement('input', { className: 'quest__name',
+          disabled: !this.state.edited,
+          onChange: this.handleChange,
+          value: questName }),
         buttons
       );
     }
@@ -604,7 +647,7 @@ var QuestBoard = (function (_React$Component) {
     value: function render() {
       var quests = [];
       for (var i = this.props.quests.length - 1; i >= 0; i--) {
-        quests.push(_react2.default.createElement(_Quest2.default, { quest: this.props.quests[i], key: this.props.quests[i].created }));
+        quests.push(_react2.default.createElement(_Quest2.default, { update: this.props.updateQuest, quest: this.props.quests[i], key: this.props.quests[i].created }));
       };
       return _react2.default.createElement(
         'div',
@@ -678,7 +721,7 @@ var QuestField = (function (_React$Component) {
       return _react2.default.createElement(
         'div',
         { className: 'quest-field-box' },
-        _react2.default.createElement('input', { className: 'quest-field', placeholder: 'What have you got to do?', value: this.state.value, onChange: this.handleChange, id: 'questField' }),
+        _react2.default.createElement('input', { className: 'quest-field', placeholder: 'What is your quest?', value: this.state.value, onChange: this.handleChange, id: 'questField' }),
         _react2.default.createElement('button', { className: 'questSubmitButton', onClick: this.handleClick })
       );
     }
@@ -1239,8 +1282,13 @@ exports.default = MapTerrainTile;
 module.exports = {
   CREATE_QUEST: 'CREATE_QUEST',
   CREATED_QUEST: 'CREATED_QUEST',
+
+  UPDATE_QUEST: 'UPDATE_QUEST',
+  UPDATED_QUEST: 'UPDATED_QUEST',
+
   COMPLETE_QUEST: 'COMPLETE_QUEST',
   COMPLETED_QUEST: 'COMPLETED_QUEST',
+
   GOT_QUESTS: 'GOT_QUESTS',
 
   GOT_CURRENT_HERO: 'GOT_CURRENT_HERO',
@@ -1384,7 +1432,23 @@ var QuestStore = module.exports = require('./store.js').extend({
 		// 	return ids.indexOf(chirp.userId) > -1;
 		// });
 		return this._data;
+	},
+	allIncomplete: function allIncomplete() {
+		var incompleteQuests = [];
+		for (var i = 0; i < this._data.length; i++) {
+			this._data[i].completed ? "" : incompleteQuests.push(this._data[i]);
+		}
+		return incompleteQuests;
+		// return this._data.filter(function(quest) {
+		// 	return quest.completed == 0;
+		// });
 	}
+	// for when looking up other users
+	// byHeroId: function(id) {
+	// 	return this._data.filter(function(chirp) {
+	// 		return chirp.userId === id;
+	// 	});
+	// }
 });
 
 },{"../constants":19,"./heroStore":22,"./store.js":26}],26:[function(require,module,exports){
