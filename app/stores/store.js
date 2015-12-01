@@ -10,14 +10,7 @@ var storeMethods = {
 			console.log("data for store " + this.constructor.name + " is null");
 			return
 		}
-		var currIds = this._data.map(function(m) {
-			return m.Id;
-		});
-		arr.filter(function(item) {
-			return currIds.indexOf(item.Id) === -1;
-		}).forEach(this.add.bind(this));
-
-		this.sort();
+		this._data = arr;
 	},
 	add: function(item) {
 		this._data.push(item);
@@ -25,7 +18,7 @@ var storeMethods = {
 	},
 	sort: function() {
 		this._data.sort(function(a, b) {
-			return +new Date(b.Created) - +new Date(a.Created);
+			return +new Date(b.created) - +new Date(a.created);
 		});
 	},
 	all: function() {

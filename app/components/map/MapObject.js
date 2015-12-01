@@ -10,11 +10,19 @@ class MapObject extends React.Component {
       this.props.object.visited,
       this.props.object.avatarUrl
     ];
-    if (objType != undefined) type = objType;
     if (objVisited != undefined) visited = objVisited;
     if (objUrl != undefined) bgi = objUrl;
-    let tileClass = `map-object ${visited} ${OBJECTS[type]}`;
-    let styles = {backgroundImage: `url(${bgi})`};
+    if (objType != undefined) type = objType;
+    if (typeof type === "string") {
+        type = type.toLowerCase()
+        if (objUrl == undefined) {
+          bgi = `./build/assets/${type}.png`
+        } else {
+          bgi = objUrl;
+        }
+    }
+    let tileClass = `map-object ${visited} ${OBJECTS[type]} ${type}`;
+    let styles = {backgroundImage: `url("${bgi}")`};
     return (
       <div style={styles} id={this.props.object.id} className={tileClass}></div>
     );

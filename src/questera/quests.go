@@ -72,7 +72,8 @@ func createQuest(questName, questType string, created int, coords Coord, heroLog
 
 func loadQuests(HeroId bson.ObjectId) []Quest {
 	var quests []Quest
-	err := db.C(QUEST_COLL).Find(bson.M{"heroid": HeroId, "completed":0}).All(&quests)
+	query := bson.M{"heroid": HeroId, "completed":0}
+	err := db.C(QUEST_COLL).Find(query).All(&quests)
 	isFatal(err)
 	return quests
 }

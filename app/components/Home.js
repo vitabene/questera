@@ -10,7 +10,7 @@ class Home extends React.Component {
   constructor() {
     super();
     this.state = {
-      quests: QuestStore.allIncomplete(),
+      quests: QuestStore.all(),
       hero: HeroStore.getHero()
     };
     this.onChange = this.onChange.bind(this);
@@ -32,7 +32,7 @@ class Home extends React.Component {
   }
   onChange() {
     this.setState({
-      quests: QuestStore.allIncomplete(),
+      quests: QuestStore.all(),
       hero: HeroStore.getHero()
     });
   }

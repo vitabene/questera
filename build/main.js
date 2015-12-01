@@ -347,7 +347,7 @@ var Home = (function (_React$Component) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Home).call(this));
 
     _this.state = {
-      quests: _questStore2.default.allIncomplete(),
+      quests: _questStore2.default.all(),
       hero: _heroStore2.default.getHero()
     };
     _this.onChange = _this.onChange.bind(_this);
@@ -381,7 +381,7 @@ var Home = (function (_React$Component) {
     key: 'onChange',
     value: function onChange() {
       this.setState({
-        quests: _questStore2.default.allIncomplete(),
+        quests: _questStore2.default.all(),
         hero: _heroStore2.default.getHero()
       });
     }
@@ -558,13 +558,13 @@ var Quest = (function (_React$Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.setState({
-        id: this.props.quest ? this.props.quest.id : ''
+        id: this.props.quest ? this.props.quest.id : '',
+        value: this.props.quest ? this.props.quest.name : ''
       });
     }
   }, {
     key: 'render',
     value: function render() {
-      var questName = this.state.value == "" ? this.props.quest.name : this.state.value;
       var buttons = _react2.default.createElement(
         'div',
         { className: 'quest__buttons' },
@@ -593,7 +593,7 @@ var Quest = (function (_React$Component) {
         _react2.default.createElement('input', { className: 'quest__name',
           disabled: !this.state.edited,
           onChange: this.handleChange,
-          value: questName }),
+          value: this.state.value }),
         buttons
       );
     }
@@ -857,11 +857,19 @@ var MapObject = (function (_React$Component) {
       var objVisited = this.props.object.visited;
       var objUrl = this.props.object.avatarUrl;
 
-      if (objType != undefined) type = objType;
       if (objVisited != undefined) visited = objVisited;
       if (objUrl != undefined) bgi = objUrl;
-      var tileClass = "map-object " + visited + " " + OBJECTS[type];
-      var styles = { backgroundImage: "url(" + bgi + ")" };
+      if (objType != undefined) type = objType;
+      if (typeof type === "string") {
+        type = type.toLowerCase();
+        if (objUrl == undefined) {
+          bgi = "./build/assets/" + type + ".png";
+        } else {
+          bgi = objUrl;
+        }
+      }
+      var tileClass = "map-object " + visited + " " + OBJECTS[type] + " " + type;
+      var styles = { backgroundImage: "url(\"" + bgi + "\")" };
       return _react2.default.createElement("div", { style: styles, id: this.props.object.id, className: tileClass });
     }
   }]);
@@ -974,16 +982,20 @@ var MapObjectLayer = (function (_React$Component) {
       }
       if (this.props.quests != undefined) {
         this.props.quests.forEach(function (quest, i) {
-          objectGridArr[quest.coords.y] = [];
-          var objectsPresent = objectGridArr[quest.coords.y][quest.coords.x];
+          var row = objectGridArr[quest.coords.y];
+          if (row == undefined) row = [];
+          // var objectsPresent = objectGridArr[quest.coords.y][quest.coords.x];
           // if ()
-          objectGridArr[quest.coords.y][quest.coords.x] = quest;
+          row[quest.coords.x] = quest;
+          objectGridArr[quest.coords.y] = row;
         });
       }
       var hero = this.props.hero;
       if (hero != undefined && hero.coords != undefined) {
-        objectGridArr[hero.coords.y] = [];
-        objectGridArr[hero.coords.y][hero.coords.x] = hero;
+        var row = objectGridArr[hero.coords.y];
+        if (row == undefined) row = [];
+        row[hero.coords.x] = hero;
+        objectGridArr[hero.coords.y] = row;
       }
       if (this.props.map != undefined && this.props.map.map != undefined) {
         var rl = this.props.map.map[0].length;
@@ -1424,7 +1436,7 @@ var HeroStore = require('./heroStore');
 var QuestStore = module.exports = require('./store.js').extend({
 	init: function init() {
 		this.bind(constants.GOT_QUESTS, this.set);
-		this.bind(constants.CREATED_QUEST, this.add);
+		this.bind(constants.CREATED_QUEST, this.set);
 	},
 	timeline: function timeline() {
 		// var ids = [HeroStore.currentHero.cid].concat(HeroStore.currentHero.following);
@@ -1436,7 +1448,8 @@ var QuestStore = module.exports = require('./store.js').extend({
 	allIncomplete: function allIncomplete() {
 		var incompleteQuests = [];
 		for (var i = 0; i < this._data.length; i++) {
-			this._data[i].completed ? "" : incompleteQuests.push(this._data[i]);
+			if (this._data[i].completed == 0) incompleteQuests.push(this._data[i]);
+			// this._data[i].completed ? "" : incompleteQuests.push(this._data[i])
 		}
 		return incompleteQuests;
 		// return this._data.filter(function(quest) {
@@ -1471,14 +1484,7 @@ var storeMethods = {
 			console.log("data for store " + this.constructor.name + " is null");
 			return;
 		}
-		var currIds = this._data.map(function (m) {
-			return m.Id;
-		});
-		arr.filter(function (item) {
-			return currIds.indexOf(item.Id) === -1;
-		}).forEach(this.add.bind(this));
-
-		this.sort();
+		this._data = arr;
 	},
 	add: function add(item) {
 		this._data.push(item);
@@ -1486,7 +1492,7 @@ var storeMethods = {
 	},
 	sort: function sort() {
 		this._data.sort(function (a, b) {
-			return +new Date(b.Created) - +new Date(a.Created);
+			return +new Date(b.created) - +new Date(a.created);
 		});
 	},
 	all: function all() {

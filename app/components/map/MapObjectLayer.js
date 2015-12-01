@@ -55,16 +55,20 @@ class MapObjectLayer extends React.Component {
     }
     if (this.props.quests != undefined) {
       this.props.quests.forEach(function(quest, i) {
-        objectGridArr[quest.coords.y] = [];
-        var objectsPresent = objectGridArr[quest.coords.y][quest.coords.x];
+        var row = objectGridArr[quest.coords.y];
+        if (row == undefined) row = [];
+        // var objectsPresent = objectGridArr[quest.coords.y][quest.coords.x];
         // if ()
-        objectGridArr[quest.coords.y][quest.coords.x] = quest;
+        row[quest.coords.x] = quest;
+        objectGridArr[quest.coords.y] = row;
       });
     }
     var hero = this.props.hero;
     if (hero != undefined && hero.coords != undefined) {
-      objectGridArr[hero.coords.y] = [];
-      objectGridArr[hero.coords.y][hero.coords.x] = hero;
+      var row = objectGridArr[hero.coords.y];
+      if (row == undefined) row = [];
+      row[hero.coords.x] = hero;
+      objectGridArr[hero.coords.y] = row;
     }
     if (this.props.map != undefined && this.props.map.map != undefined) {
       var rl = this.props.map.map[0].length

@@ -4,7 +4,7 @@ var HeroStore = require('./heroStore');
 var QuestStore = module.exports = require('./store.js').extend({
 	init: function() {
 		this.bind(constants.GOT_QUESTS, this.set);
-		this.bind(constants.CREATED_QUEST, this.add);
+		this.bind(constants.CREATED_QUEST, this.set);
 	},
 	timeline: function() {
 		// var ids = [HeroStore.currentHero.cid].concat(HeroStore.currentHero.following);
@@ -16,7 +16,8 @@ var QuestStore = module.exports = require('./store.js').extend({
 	allIncomplete: function() {
 		var incompleteQuests = [];
 		for (var i = 0; i < this._data.length; i++) {
-			this._data[i].completed ? "" : incompleteQuests.push(this._data[i])
+			if (this._data[i].completed == 0)	incompleteQuests.push(this._data[i])
+			// this._data[i].completed ? "" : incompleteQuests.push(this._data[i])
 		}
 		return incompleteQuests
 		// return this._data.filter(function(quest) {
