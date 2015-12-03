@@ -1,18 +1,17 @@
 #Questera
 
+#next
+- multiple objects on one tile - 15 min
+- interaction window when object.coords == hero.coords 30 - min
+- hero route planning - 2 hours
+- 10 objects - 2 hours
+- 1 better map - x hours
+- map editor
+
+- removing a quest - 15 min
+- logout button - 5 min
+
+- better textures - x hours
+
 ##What is it?
-It is a single page task (quest) manager that is inspired by the genre of fantasy.
-It is meant to gamify work that would have othewise been dull and bring a little geek fun into your daily life.
-
-###Development stage
-I work on this app in my free time and so the progress is very gradual, however, there still is *progress*, that is after all one of the things Questera is about
-
-###Technologies used
-Front-End - React for interface
-
-Back-End - server in Go
-
-Task runner - gulp
-
-Flux transformation beginning
-10/29 20:14:40
+Quest manager.

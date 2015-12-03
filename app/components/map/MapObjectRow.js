@@ -5,11 +5,11 @@ class MapObjectRow extends React.Component {
   render () {
     let tiles = [];
     for (var i = 0; i < this.props.l; i++) {
-      let object = {};
+      let objects = [];
       let objs = this.props.objects;
-      if (objs != undefined && objs[i] != undefined) object = objs[i];
+      if (objs != undefined && objs[i] != undefined) objects = objs[i];
       tiles.push(
-        <MapObjectTile object={object}/>
+        <MapObjectTile objects={objects}/>
       );
     }
     return (

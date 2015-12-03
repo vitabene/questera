@@ -4,7 +4,7 @@
   "description": "A gamified fantasy task manager'",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "browserify ./app/main.js -t [ babelify --presets [ es2015 react ] ] --outfile ./build/main.js"
   },
   "repository": {
     "type": "git",
@@ -14,9 +14,6 @@
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/vitabene/questera/issues"
-  },
-"scripts": {
-    "start": "browserify ./app/main.js -t [ babelify --presets [ es2015 react ] ] --outfile ./build/main.js"
   },
   "homepage": "https://github.com/vitabene/questera#readme",
   "devDependencies": {
@@ -34,7 +31,8 @@
     "jsx-loader": "~0.13.2",
     "babel-preset-es2015": "~6.1.2",
     "babelify": "~7.2.0",
-    "babel-preset-react": "~6.1.2"
+    "babel-preset-react": "~6.1.2",
+    "react": "~0.14.3"
   },
   "dependencies": {
     "react-dom": "~0.14.2",

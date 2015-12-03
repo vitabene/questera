@@ -24,7 +24,7 @@ class MapObject extends React.Component {
     let tileClass = `map-object ${visited} ${OBJECTS[type]} ${type}`;
     let styles = {backgroundImage: `url("${bgi}")`};
     return (
-      <div style={styles} id={this.props.object.id} className={tileClass}></div>
+      <div style={styles} className={tileClass}></div>
     );
   }
 }

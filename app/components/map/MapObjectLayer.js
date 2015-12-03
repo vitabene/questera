@@ -49,17 +49,23 @@ class MapObjectLayer extends React.Component {
     var grid = [], objectGridArr = [];
     if (this.state.objects != undefined) {
       this.state.objects.forEach(function(obj, i) {
-        objectGridArr[obj.coords.y] = [];
-        objectGridArr[obj.coords.y][obj.coords.x] = obj;
+        var row = objectGridArr[obj.coords.y];
+        if (row == undefined) row = [];
+        var tile = row[obj.coords.x];
+        if (tile == undefined) tile = [];
+        tile.push(obj);
+        row[obj.coords.x] = tile;
+        objectGridArr[obj.coords.y] = row;
       });
     }
     if (this.props.quests != undefined) {
       this.props.quests.forEach(function(quest, i) {
         var row = objectGridArr[quest.coords.y];
         if (row == undefined) row = [];
-        // var objectsPresent = objectGridArr[quest.coords.y][quest.coords.x];
-        // if ()
-        row[quest.coords.x] = quest;
+        var tile = row[quest.coords.x];
+        if (tile == undefined) tile = [];
+        tile.push(quest);
+        row[quest.coords.x] = tile;
         objectGridArr[quest.coords.y] = row;
       });
     }
@@ -67,7 +73,10 @@ class MapObjectLayer extends React.Component {
     if (hero != undefined && hero.coords != undefined) {
       var row = objectGridArr[hero.coords.y];
       if (row == undefined) row = [];
-      row[hero.coords.x] = hero;
+      var tile = row[hero.coords.x];
+      if (tile == undefined) tile = [];
+      tile.push(hero);
+      row[hero.coords.x] = tile;
       objectGridArr[hero.coords.y] = row;
     }
     if (this.props.map != undefined && this.props.map.map != undefined) {
