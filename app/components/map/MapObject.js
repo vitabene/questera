@@ -1,26 +1,12 @@
 import React, { PropTypes } from 'react'
-
+const OBJECTS = ['camp'];
 class MapObject extends React.Component {
-  render () {
-    let type = "",
-        bgi = "",
-        visited = "not-visited";
-    let [objType, objVisited, objUrl]  = [
-      this.props.object.type,
-      this.props.object.visited,
-      this.props.object.avatarUrl
-    ];
-    if (objVisited != undefined) visited = objVisited;
-    if (objUrl != undefined) bgi = objUrl;
-    if (objType != undefined) type = objType;
-    if (typeof type === "string") {
-        type = type.toLowerCase()
-        if (objUrl == undefined) {
-          bgi = `./build/assets/${type}.png`
-        } else {
-          bgi = objUrl;
-        }
-    }
+  render() {
+    let o = this.props.object;
+    let visited = o.visited != undefined ? o.visited : "not-visited";
+    let type = o.type != undefined ? o.type : "";
+    type = typeof type == "string" ? type = type.toLowerCase() : type;
+    let bgi = o.avatarUrl != undefined ? o.avatarUrl : `./build/assets/${type}.png`;
     let tileClass = `map-object ${visited} ${OBJECTS[type]} ${type}`;
     let styles = {backgroundImage: `url("${bgi}")`};
     return (
